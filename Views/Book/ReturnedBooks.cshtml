@@ -1,0 +1,38 @@
+﻿@model LibraryManagementSystem.ViewModels.BorrowBookViewModel
+
+<div class="container">
+    <h2>Returned Books</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Book Title</th>
+                <th>Loan Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Loans != null && Model.Loans.Count > 0)
+            {
+                foreach (var loan in Model.Loans)
+                {
+                    <tr>
+                        <td>@loan.User?.FullName</td>
+                        <td>@loan.Book?.Title</td>
+                        <td>@loan.LoanDate.ToShortDateString()</td>
+                        <td>@loan.DueDate.ToShortDateString()</td>
+                        <td>@loan.ReturnDate?.ToShortDateString()</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">No returned books found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,310 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@model LibraryManagementSystem.ViewModels.BookViewModel;
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
+
+<div class="container-md" style="margin-right:7px">
+    <h2>Books List</h2>
+
+    <div class="container">
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <a asp-action="Create" asp-controller="Book">Create</a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#borrowBooks">
+                Borrow
+            </button>
+        </div>
+    </div>
+
+
+
+    <table id="example" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Total Copies</th>
+                <th>Available Copies</th>
+                <th>Category</th>
+                <th>PhotoPath</th>
+                <th>BorrowingDays</th>
+                <th colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Books != null)
+            {
+                foreach (var item in Model.Books)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Author</td>
+                        <td>@item.ISBN</td>
+                        <td>@item.TotalCopies</td>
+                        <td>@item.AvailableCopies</td>
+                        <td>@item.Category</td>
+                        <td>
+                            <img src="/images/@item.PhotoPath" alt="Book Cover" style="max-width: 80px; max-height: 100px;" />
+                        </td>
+
+                        <td>@item.BorrowingDays</td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-primary details-button"
+                                    data-toggle="modal"
+                                    data-target="#detailsModal"
+                                    data-id="@item.Id"
+                                    data-title="@item.Title"
+                                    data-author="@item.Author"
+                                    data-isbn="@item.ISBN"
+                                    data-totalcopies="@item.TotalCopies"
+                                    data-availablecopies="@item.AvailableCopies"
+                                    data-category="@item.Category"
+                                    data-borrowingdays="@item.BorrowingDays"
+                                    data-photopath="@item.PhotoPath">
+                                Details
+                            </button>
+                        </td>
+
+
+                        <td>
+                            <button type="button"
+                                    class="btn btn-primary edit-button"
+                                    data-toggle="modal"
+                                    data-target="#editModal"
+                                    data-id="@item.Id"
+                                    data-title="@item.Title"
+                                    data-author="@item.Author"
+                                    data-isbn="@item.ISBN"
+                                    data-totalcopies="@item.TotalCopies"
+                                    data-availablecopies="@item.AvailableCopies"
+                                    data-category="@item.Category"
+                                    data-borrowingdays="@item.BorrowingDays"
+                                    data-photopath="@item.PhotoPath">
+                                Edit
+                            </button>
+
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Book Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr><th>Title</th><td id="detail-title"></td></tr>
+                        <tr><th>Author</th><td id="detail-author"></td></tr>
+                        <tr><th>ISBN</th><td id="detail-isbn"></td></tr>
+                        <tr><th>Total Copies</th><td id="detail-totalcopies"></td></tr>
+                        <tr><th>Available Copies</th><td id="detail-availablecopies"></td></tr>
+                        <tr><th>Category</th><td id="detail-category"></td></tr>
+                        <tr><th>Borrowing Days</th><td id="detail-borrowingdays"></td></tr>
+                        <tr>
+                            <th>Photo</th>
+                            <td>
+                                <img id="detail-photo" src="/images/alt-image.jpg" alt="Book Image" style="max-width: 150px;" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editForm" method="post" asp-action="Edit" asp-controller="Book" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Book</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="hidden" name="Id" id="edit-id" />
+
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input class="form-control" name="Title" id="edit-title" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input class="form-control" name="Author" id="edit-author" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>ISBN</label>
+                            <input class="form-control" name="ISBN" id="edit-isbn" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Total Copies</label>
+                            <input class="form-control" name="TotalCopies" id="edit-totalcopies" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Available Copies</label>
+                            <input class="form-control" name="AvailableCopies" id="edit-availablecopies" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input class="form-control" name="Category" id="edit-category" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Borrowing Days</label>
+                            <input class="form-control" name="BorrowingDays" id="edit-borrowingdays" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Photo</label>
+                            <input type="file" class="form-control-file" name="Photo" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+<div class="modal fade" id="borrowBooks" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Borrow Books</h1>
+            </div>
+            <form asp-action="BorrowedBooks" asp-controller="Book" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="SelectedStudent">Student  </label>
+                        <select asp-for="StudentId" class="form-control">
+                            <option value="">Select Student </option>
+                            @foreach (var StudentId in Model.Users)
+
+                            {
+                                <option value="@StudentId.Id">@StudentId.FullName </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <div class="dropdown">
+                        <label for="Booktitle"> Book Title </label>
+                        <select asp-for="BookId" class="form-control">
+                            <option value="">Select Book Title </option>
+                            @if (Model.Books != null)
+                            {
+
+                                @foreach (var book in Model.Books)
+
+                                {
+                                    <option value="@book.Id">@book.Title</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+<script>
+    new DataTable('#example');
+</script>
+<script>
+    $(document).ready(function () {
+        $('.details-button').click(function () {
+            var button = $(this);
+
+            $('#detail-title').text(button.data('title'));
+            $('#detail-author').text(button.data('author'));
+            $('#detail-isbn').text(button.data('isbn'));
+            $('#detail-totalcopies').text(button.data('totalcopies'));
+            $('#detail-availablecopies').text(button.data('availablecopies'));
+            $('#detail-category').text(button.data('category'));
+            $('#detail-borrowingdays').text(button.data('borrowingdays'));
+
+            const photoPath = button.data('photopath');
+            if (photoPath && photoPath.trim() !== "") {
+                $('#detail-photo').attr('src', '/images/' + photoPath);
+            } else {
+                $('#detail-photo').attr('src', '/images/alt-image.jpg');
+            }
+        });
+    });
+
+</script>
+
+
+<script>
+    $(document).on('click', '.edit-button', function () {
+        const button = $(this);
+
+        $('#edit-id').val(button.data('id'));
+        $('#edit-title').val(button.data('title'));
+        $('#edit-author').val(button.data('author'));
+        $('#edit-isbn').val(button.data('isbn'));
+        $('#edit-totalcopies').val(button.data('totalcopies'));
+        $('#edit-availablecopies').val(button.data('availablecopies'));
+        $('#edit-category').val(button.data('category'));
+        $('#edit-borrowingdays').val(button.data('borrowingdays'));
+
+        const formAction = '/Book/Edit/' + button.data('id');
+        $('#editForm').attr('action', formAction);
+    });
+
+</script>
+
+
+
+

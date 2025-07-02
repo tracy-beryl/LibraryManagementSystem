@@ -1,0 +1,43 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.PastPapers>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
+     <div class="container-md" style="margin-right:7px">
+
+        <h2>Uploaded Past Papers</h2>
+        <a asp-action="Create" asp-controller="PastPapers">Create</a>
+
+        <table id="example" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Academic Year</th>
+                    <th>Semester</th>
+                    <th>Uploaded By</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var paper in Model)
+                {
+                    <tr>
+                        <td>@paper.CourseCode</td>
+                        <td>@paper.CourseTitle</td>
+                        <td>@paper.AcademicYear</td>
+                        <td>@paper.Semester</td>
+                        <td>@paper.UploadedBy</td>
+                        <td><a href="@paper.FilePath" target="_blank">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div> 
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+    <script>
+    new DataTable('#example');
+    </script>

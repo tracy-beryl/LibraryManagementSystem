@@ -1,0 +1,55 @@
+﻿@*@model LibraryManagementSystem.Models.Book;
+
+    <div class="modal fade" id="detailBooks" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Book Details</h1>
+                </div>
+                <form asp-action="Details" asp-controller="Book" method="post">
+                    <div class="modal-body">
+
+                        <div class="card-body text-center">
+
+                            <h4>
+                                Title : @Model.Title
+                            </h4>
+                            <h4>
+                                Author :@Model.Author
+                            </h4>
+                            <h4>
+                                ISBN : @Model.ISBN
+                            </h4>
+                            <h4>
+                                TotalCopies :@Model.TotalCopies
+                            </h4>
+                            <h4>
+                                AvailableCopies: @Model.AvailableCopies
+                            </h4>
+                            <h4>
+                                PhotoPath : @Model.PhotoPath
+                            </h4>
+                            <h4>
+                                Category: @Model.Category
+                            </h4>
+                            <h4>
+                                BorrowingDays: @Model.BorrowingDays
+                            </h4>
+
+
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+         </div>
+
+    </div>*@

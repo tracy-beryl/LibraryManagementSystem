@@ -1,0 +1,22 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.ApplicationUser>
+
+<h2>Staff List</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var staff in Model)
+        {
+            <tr>
+                <td>@staff.FullName</td>
+                <td>@staff.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

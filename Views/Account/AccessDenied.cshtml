@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="text-danger">Access Denied</h1>
+            <div class="alert alert-danger mt-4">
+                <p>You don't have permission to access this resource.</p>
+
+                @if (!string.IsNullOrEmpty(ViewData["ReturnUrl"] as string))
+                {
+                    <p>Attempted to access: @ViewData["ReturnUrl"]</p>
+                }
+
+                <p>Please contact your administrator if you believe this is an error.</p>
+            </div>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Return to Home
+                </a>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="@Url.Action("Logout", "Account")" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i> Login with Different Account
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

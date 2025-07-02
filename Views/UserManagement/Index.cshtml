@@ -1,0 +1,126 @@
+﻿<!-- Tab links -->
+<!--<div class="tab">
+    <button class="tablinks" onclick="/*openCity(event, 'London')*/">London</button>
+    <button class="tablinks" onclick="/*openCity(event, 'Paris')*/">Paris</button>
+    <button class="tablinks" onclick="/*openCity(event, 'Tokyo')*/">Tokyo</button>
+</div>-->
+
+<!-- Tab content -->
+<!--<div id="London" class="tabcontent">
+    <h3>London</h3>
+    <p>London is the capital city of England.</p>
+</div>
+
+<div id="Paris" class="tabcontent">
+    <h3>Paris</h3>
+    <p>Paris is the capital of France.</p>
+</div>
+
+<div id="Tokyo" class="tabcontent">
+    <h3>Tokyo</h3>
+    <p>Tokyo is the capital of Japan.</p>
+</div>
+
+<script>
+    //function openCity(evt, cityName) {
+    //    // Declare all variables-->
+        <!--var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+</script>-->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
+
+<div class="container-fluid">
+<div class="tab">
+    <button class="tablinks" onclick="openUser(event, 'Users')">Users</button>
+    <button class="tablinks" onclick="openUser(event, 'Roles')">Roles</button>
+
+</div>
+ Tab content 
+<div id="Users" class="tabcontent">
+    <div class="container-md">
+        <table id="example" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+
+                    <th>FullName</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+
+
+</div>
+
+<div id="Roles" class="tabcontent">
+    <div class="container-md">
+        <table id="example" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+
+                    <th>FullName</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>Role</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            </thead>
+
+        </table>
+    </div>
+
+</div>
+
+
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+<script>
+    new DataTable('#example');
+</script>
+
+<script>
+    function openUser(evt, userInfo) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+</script>

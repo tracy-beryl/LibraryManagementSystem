@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "About Library";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header>
+    <nav class="navbar navbar-light bg-secondary">
+        <ul class="d-flex align-content-between">
+            <li><a href="#"><strong>Home</strong></a></li>
+            <li><a href="">About</a></li>
+            <li><a asp-controller="book" asp-action="index">Books</a></li>
+            <li><a href="">Services</a></li>
+            <li style="margin-left:1000px;"><a asp-controller="account" asp-action="register">Sign-Up</a></li>
+            <li style="margin-right:1000px;"><a asp-controller="account" asp-action="login">Login</a></li>
+
+        </ul>
+    </nav>
+</header>
+<section>
+    <div class="about-page" style="margin-left: 250px; padding-top: 100px;">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h1 class="display-5"> Welcome to Our Library</h1>
+                <p class="lead">Empowering learning, knowledge, and research since 2018.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Our Mission</h3>
+                    <p>
+                        Our mission is to provide easy access to books, educational materials, and past papers
+                        for students and researchers in a supportive, resourceful, and tech-enabled environment.
+                    </p>
+
+                    <h3>What We Offer</h3>
+                    <ul>
+                        <li>A vast collection of books across all disciplines</li>
+                        <li>Digital borrowing and return services</li>
+                        <li>Access to archived past papers</li>
+                        <li>Study areas and research assistance</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <h3>Why Choose Us</h3>
+                    <p>
+                        We believe in making education accessible to all. Our online system ensures smooth tracking of books,
+                        reduces wait times, and gives students an efficient and modern way to interact with library resources.
+                    </p>
+
+                    <h3>Contact Us</h3>
+                    <p>
+                        Beta Library<br />
+                        +254 712 345 678<br />
+                        betalibrary@ac.ke
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
