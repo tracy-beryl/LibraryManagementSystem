@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model List<LibraryManagementSystem.Models.Loan>
+
+<h3 class="mb-4">My History</h3>
+
+@if (!Model.Any())
+{
+    <p>You haven't borrowed any books yet.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Borrowed Date</th>
+                <th>Returned Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td>@loan.Book.Title</td>
+                    <td>@loan.LoanDate.ToShortDateString()</td>
+                    <td>@(loan.ReturnDate?.ToShortDateString() ?? "Not Returned")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

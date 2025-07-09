@@ -3,6 +3,7 @@ using LibraryManagementSystem.Models;
 using LibraryManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,10 +18,12 @@ namespace LibraryManagementSystem.Controllers
     public class BookController : Controller
     {
         private readonly LibraryDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BookController(LibraryDbContext libraryDbContext)
+        public BookController(LibraryDbContext libraryDbContext, UserManager<ApplicationUser> userManager)
         {
             _context = libraryDbContext;
+            _userManager = userManager;
         }
 
 
@@ -55,59 +58,7 @@ namespace LibraryManagementSystem.Controllers
             return View(model);
         }
 
-        //public ActionResult Index()
-        //{
-        //    var model = new BookViewModel();
-        //    {
-        //    model.Users = _context.Users.ToList();
-        //    model.Books = _context.Books.ToList();
-        //    var loans = _context.Loans.Where(c => c.ReturnDate == null).Distinct();
-        //        var allLoans = new List<Loan>();
-        //         allLoans = _context.Loans
-        //    .Where(c => c.ReturnDate == null && c.BookId != null)
-        //     .ToList();
-
-        //        var allLoansBooksId = allLoans
-        //            .Select(c => c.BookId)
-        //            .ToList();
-
-        //        var groupedLoanCounts = allLoansBooksId
-        //            .GroupBy(c => c)
-        //            .Select(g => new { BookId = g.Key, Count = g.Count() })
-        //            .ToList();
-
-
-
-        //        foreach (var item in allLoans)
-        //        {
-        //            var book = _context.Books.FirstOrDefault(c => c.Id == item.BookId);
-        //            if (book != null)
-        //        {
-        //            var loanCount = groupedLoanCounts
-        //                .FirstOrDefault(g => g.BookId == book.Id)?.Count ?? 0;
-
-        //            var availableCopies = book.TotalCopies - loanCount;
-        //            model.AvailableCopies = availableCopies;
-
-        //        }
-        //    }
-
-        //}
-        //    return View(model);
-        //}
-        //var userDetail = "";
-        //var bookDetail = "";
-        //    foreach (var item in allLoans)
-
-        //    {
-        //     bookDetail = _context.Books.Where(c =>c.Id == item.BookId).FirstOrDefault().Title;
-        //     userDetail = _context.Users.Where(c => c.Id == item.UserId).FirstOrDefault().FullName;
-
-        //    }    //Loans = allLoans,
-        //StudentName = userDetail,
-        //BookTitle = bookDetail,
-        //LoanDate = DateTime.Now,
-        //DueDate = DateTime.Now.AddDays(2)
+        
 
 
         [HttpGet]
@@ -357,5 +308,45 @@ namespace LibraryManagementSystem.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public async Task <IActionResult> MyBorrowedBooks(string UserId)
+
+        {
+            var loggedInUser = await _userManager.GetUserAsync(User);
+            if (loggedInUser!= null)
+            {
+                var loan = _context.Loans.Where(u => u.UserId == loggedInUser.Id).ToList();
+
+                return View(loan);
+            }
+
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> MyHistory()
+        {
+            var loggedInUser = await _userManager.GetUserAsync(User);
+
+            if (loggedInUser != null)
+            {
+                var allLoans = await _context.Loans
+                    .Include(l => l.Book)
+                    .Where(l => l.UserId == loggedInUser.Id)
+                    .ToListAsync();
+
+                return View(allLoans); 
+            }
+
+            return View();
+        }
+
+
+
+
+
+
     }
 }

@@ -106,6 +106,9 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -134,37 +137,21 @@ namespace LibraryManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "A1",
+                            Id = "8b8b820f-bf84-4ffe-87bd-be619179d833",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b5947e00-85fa-4e19-ba88-f0bd05a97ed8",
+                            ConcurrencyStamp = "fb7b5d15-dc89-4076-a44b-46773f609efc",
                             Email = "johndoe@gmail.com",
                             EmailConfirmed = true,
                             FullName = "John Doe",
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHNDOE@GMAIL.COM",
                             NormalizedUserName = "JOHNDOE@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDL3ztn5b6XcgI4dEbZWZ1T1K97BUC88Ow6Fh8foydoJiZsFLnwt2gJ2mNp09NdxUQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECU+jeMV4TPvpxcstgPoXPpp70DQlKf8fptvF4qOTeJFtU09x1VtUnTDfbM/21R0+g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ca11c6f5-1a03-495b-9a46-6e55aeeb269a",
+                            RoleId = "e577164a-6f5f-4f2d-8f2d-f58bd6a1e8f8",
+                            SecurityStamp = "6d4af22d-5064-4457-97ca-a98f0bbc91d8",
                             TwoFactorEnabled = false,
                             UserName = "johndoe@gmail.com"
-                        },
-                        new
-                        {
-                            Id = "S1",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "741133fd-1969-4aba-9ae6-65401e38b1fb",
-                            Email = "moyimeso@gmail.com",
-                            EmailConfirmed = true,
-                            FullName = "Moyi Meso",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "MOYIMESO@GMAIL.COM",
-                            NormalizedUserName = "MOYIMESO@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECTc14J6i9MLYC/ADMNNJh2/vwvegmzpXD8Oq1tAtqFlM0+hLuA4bZ4V61erfUzbxw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "e02d367e-dd38-427f-9723-6cb6ee99299a",
-                            TwoFactorEnabled = false,
-                            UserName = "moyimeso@gmail.com"
                         });
                 });
 
@@ -278,6 +265,42 @@ namespace LibraryManagementSystem.Migrations
                     b.ToTable("PastPapers");
                 });
 
+            modelBuilder.Entity("LibraryManagementSystem.Models.Roles", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsStudent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "4b729351-7f04-4e51-9c7e-017fdf369e01",
+                            IsStudent = false,
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "5eba0279-cee8-40b6-92e9-fd54ba4a5b60",
+                            IsStudent = false,
+                            RoleName = "Staff"
+                        },
+                        new
+                        {
+                            Id = "25272b90-aa34-44d3-89cf-1ca24037ca92",
+                            IsStudent = true,
+                            RoleName = "Student"
+                        });
+                });
+
             modelBuilder.Entity("LibraryManagementSystem.Models.Staff", b =>
                 {
                     b.Property<int>("Id")
@@ -344,29 +367,6 @@ namespace LibraryManagementSystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            ConcurrencyStamp = "b8d4cea2-1103-4c45-858a-f0d1a1801e7f",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            ConcurrencyStamp = "69b2cef6-b382-4a93-b8ec-f9d36eca069a",
-                            Name = "Staff",
-                            NormalizedName = "STAFF"
-                        },
-                        new
-                        {
-                            Id = "3",
-                            ConcurrencyStamp = "085197f3-a890-4010-b8ce-cf8c669699e8",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -452,18 +452,6 @@ namespace LibraryManagementSystem.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "A1",
-                            RoleId = "1"
-                        },
-                        new
-                        {
-                            UserId = "S1",
-                            RoleId = "2"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

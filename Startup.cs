@@ -1,4 +1,5 @@
 using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,15 +30,24 @@ namespace LibraryManagementSystem
             services.AddDbContext<LibraryDbContext>(options =>
            options.UseSqlServer(Configuration.GetConnectionString("LibraryDbContext")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+            }
+                )
                 .AddEntityFrameworkStores<LibraryDbContext>()
                 .AddDefaultTokenProviders();
-
+            services.AddScoped<MyService>();
             services.ConfigureApplicationCookie(options =>
             {
+                
                 options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+               
 
             });
+
 
             services.AddMvc(options => {
 
@@ -62,9 +72,9 @@ namespace LibraryManagementSystem
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+           
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

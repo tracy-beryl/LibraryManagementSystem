@@ -9,11 +9,15 @@ namespace LibraryManagementSystem.Models
     public class ApplicationUser : IdentityUser
     {
         
+        
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
         public string FullName { get; set; }
         public string StudentId { get; set; }
+
+        public string RoleId { get; set; }
+        
 
         public ICollection<Loan> Loans { get; set; }
     }

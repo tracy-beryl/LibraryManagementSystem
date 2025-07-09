@@ -1,126 +1,323 @@
-﻿<!-- Tab links -->
-<!--<div class="tab">
-    <button class="tablinks" onclick="/*openCity(event, 'London')*/">London</button>
-    <button class="tablinks" onclick="/*openCity(event, 'Paris')*/">Paris</button>
-    <button class="tablinks" onclick="/*openCity(event, 'Tokyo')*/">Tokyo</button>
-</div>-->
+﻿@model LibraryManagementSystem.ViewModels.UserAndRoleViewModel
 
-<!-- Tab content -->
-<!--<div id="London" class="tabcontent">
-    <h3>London</h3>
-    <p>London is the capital city of England.</p>
-</div>
 
-<div id="Paris" class="tabcontent">
-    <h3>Paris</h3>
-    <p>Paris is the capital of France.</p>
-</div>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-md">
+    <div class="card-header bg-white" role="tablist">
+        <button class="btn btn-primary active" id="nav-users-tab" data-bs-toggle="tab"
+                data-bs-target="#Users" aria-selected="true" aria-controls="Users" type="button">
+            Users
+        </button>
 
-<div id="Tokyo" class="tabcontent">
-    <h3>Tokyo</h3>
-    <p>Tokyo is the capital of Japan.</p>
-</div>
-
-<script>
-    //function openCity(evt, cityName) {
-    //    // Declare all variables-->
-        <!--var i, tabcontent, tablinks;
-
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-
-        // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
-        evt.currentTarget.className += " active";
-</script>-->
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
-
-<div class="container-fluid">
-<div class="tab">
-    <button class="tablinks" onclick="openUser(event, 'Users')">Users</button>
-    <button class="tablinks" onclick="openUser(event, 'Roles')">Roles</button>
-
-</div>
- Tab content 
-<div id="Users" class="tabcontent">
-    <div class="container-md">
-        <table id="example" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-
-                    <th>FullName</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th colspan="2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <button class="btn btn-primary" id="nav-roles-tab" data-bs-toggle="tab"
+                data-bs-target="#Roles" aria-selected="false" aria-controls="Roles" type="button">
+            Roles
+        </button>
     </div>
 
+    <div class="tab-content">
+
+        <div class="tab-pane fade show active shadow" id="Users" role="tabpanel" aria-labelledby="nav-users-tab">
+
+            <div>
+                <a class="float-right mb-md-3" asp-action="CreateUser" asp-controller="UserManagement">Create</a>
+            </div>
+
+            <table id="users-table" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>FullName</th>
+                        <th>Email</th>
+                        <th>PhoneNumber</th>
+                        <th>Role</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.Role</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editUserModal"
+                                        data-email="@user.Email"
+                                        data-fullname="@user.FullName"
+                                        data-phonenumber="@user.PhoneNumber">
+                                    Edit
+                                </button>
 
 
-</div>
+                            </td>
 
-<div id="Roles" class="tabcontent">
-    <div class="container-md">
-        <table id="example" class="table table-bordered table-striped">
-            <thead>
-                <tr>
+                            <td>
+                                <form method="post" asp-action="DeleteUser" asp-controller="UserManagement"
+                                      onsubmit="return confirmUserDelete(event)">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="email" value="@user.Email" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
 
-                    <th>FullName</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th>Role</th>
-                    <th colspan="2">Actions</th>
-                </tr>
-            </thead>
 
-        </table>
+
+                        </tr>
+
+
+                       
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+
+
+
+        <div class="tab-pane fade shadow" id="Roles" role="tabpanel" aria-labelledby="nav-roles-tab">
+
+            <div>
+                <button class="btn btn-primary float-right" data-bs-toggle="modal" data-bs-target="#createRoleModal">Create</button>
+
+            </div>
+
+
+            <div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <form asp-action="CreateRole" asp-controller="UserManagement" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editRoleModalLongTitle">Create New Role</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input name="RoleName" class="form-control" placeholder="Name" required />
+                                    <span class="text-danger">@Html.ValidationMessage("RoleName")</span>
+
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        IsSelected
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Save changes</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <table id="roles-table" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+
+                        <th>Role</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var role in Model.Roles)
+                    {
+                        <tr>
+
+                            <td>@role.RoleName</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editRoleModal"
+                                        data-rolename="@role.RoleName">
+                                    Edit
+                                </button>
+
+
+
+                            </td>
+
+
+                            <td>
+                                <form method="post" asp-action="DeleteRole" asp-controller="UserManagement"
+                                      onsubmit="return confirmRoleDelete(event)">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="roleName" value="@role.RoleName" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+
+
+
+                        </tr>
+                        
+
+                    }
+                </tbody>
+
+
+
+            </table>
+
+
+
+
+
+        </div>
     </div>
-
 </div>
 
 
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="EditUser" asp-controller="UserManagement" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="Email" id="editEmail" />
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="FullName" class="form-control" id="editFullName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" name="PhoneNumber" class="form-control" id="editPhoneNumber" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+
+
+<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="EditRole" asp-controller="UserManagement" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="OldRoleName" id="editOldRoleName" />
+                    <div class="mb-3">
+                        <label class="form-label">New Role Name</label>
+                        <input type="text" name="NewRoleName" class="form-control" id="editNewRoleName" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
-    new DataTable('#example');
+    function confirmUserDelete(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This user will be permanently deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete user!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+        return false;
+    }
+
+    function confirmRoleDelete(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This role will be permanently deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete role!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+        return false;
+    }
 </script>
 
 <script>
-    function openUser(evt, userInfo) {
-        // Declare all variables
-        var i, tabcontent, tablinks;
+    const editUserModal = document.getElementById('editUserModal');
 
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
+    editUserModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
 
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
+        const email = button.getAttribute('data-email');
+        const fullName = button.getAttribute('data-fullname');
+        const phoneNumber = button.getAttribute('data-phonenumber');
 
-        // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
-        evt.currentTarget.className += " active";
+
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editFullName').value = fullName;
+        document.getElementById('editPhoneNumber').value = phoneNumber;
+    });
 </script>
+
+<script>
+    const editRoleModal = document.getElementById('editRoleModal');
+
+    editRoleModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        const roleName = button.getAttribute('data-rolename');
+
+
+        document.getElementById('editOldRoleName').value = roleName;
+        document.getElementById('editNewRoleName').value = roleName;
+    });
+</script>
+
+
+
+
+
+
+
+
+

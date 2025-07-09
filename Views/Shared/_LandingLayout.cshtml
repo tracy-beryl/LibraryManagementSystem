@@ -74,22 +74,28 @@
 </head>
 <body>
     <header class="fixed-top">
-        <nav class="navbar navbar-dark bg-body-secondary">
-            <ul class="d-flex align-items-center" style="list-style:none;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <div class="container-fluid">
 
-                <li><a href="#"><strong>Home</strong></a></li>
-                <li><a asp-controller="home" asp-action="about">About</a></li>
-                <li><a asp-controller="book" asp-action="index">Books</a></li>
-                <li><a href="">Services</a></li>
-                <li style="margin-left:1000px;"><a asp-controller="account" asp-action="register">Sign-Up</a></li>
-                <li style="margin-right:900px;"><a asp-controller="account" asp-action="login">Login</a></li>
-            </ul>
+                <ul class="navbar-nav d-flex flex-row gap-3 align-items-center">
+                    <li class="nav-item">Home</li>
+                    <li class="nav-item">About Library</li>
+                    <li class="nav-item">Services</li>
+                    <li class="nav-item">Books</li>
+                    <li class="nav-item">New Books</li>
+                </ul>
 
+                <div class="justify-content-end">
+                    <a asp-controller="account" asp-action="register">Sign-Up</a>
+                    <a asp-controller="account" asp-action="login">Login</a></
+                </div>
+                
+            </div>
         </nav>
 
     </header>
     <section>
-        <div class="container-md" style="margin-top:3px;">
+        <div class="container-fluid" style="margin-top:3px;">
             <img class="img-fluid" src="~/images/image.jpg" alt="">
         </div>
         <div class=" row container-fluid py-5">

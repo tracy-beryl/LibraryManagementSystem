@@ -1,9 +1,14 @@
-﻿@model LibraryManagementSystem.ViewModels.BorrowBookViewModel
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<div class="container">
+@model LibraryManagementSystem.ViewModels.BorrowBookViewModel
+
+
+<div class="container-md">
     <h2>Returned Books</h2>
 
-    <table class="table table-bordered table-striped">
+    <table id="example" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>Student Name</th>
@@ -36,3 +41,7 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    new DataTable('#example');
+</script>

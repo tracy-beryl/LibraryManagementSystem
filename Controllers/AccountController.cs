@@ -1,6 +1,7 @@
 ﻿
 using LibraryManagementSystem.Models;
 using LibraryManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,42 +15,55 @@ namespace LibraryManagementSystem.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly LibraryDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        
 
-
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, LibraryDbContext context, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _context = context;
             _signInManager = signInManager;
+            
 
         }
 
         [HttpGet]
+        
         public IActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
+                
+                var studentRole = _context.Roles.FirstOrDefault(r => r.RoleName == "Student");
+
+                if (studentRole == null)
+                {
+                    ModelState.AddModelError("", "Student role not found in database.");
+                    return View(model);
+                }
+
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
-                    StudentId = model.IdentificationNumber
+                    StudentId = model.IdentificationNumber,
+                    RoleId = studentRole.Id 
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Student");
-
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home"); 
+                    return RedirectToAction("Index", "Home");
                 }
 
                 foreach (var error in result.Errors)
@@ -63,66 +77,101 @@ namespace LibraryManagementSystem.Controllers
 
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login()
         {
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _signInManager.PasswordSignInAsync(
+                    model.Email, model.Password, model.RememberMe, false);
 
-                if (user != null)
-                {
-                    var result = await _signInManager.PasswordSignInAsync(
-                        user.UserName,
-                        model.Password,
-                        model.RememberMe,
-                        lockoutOnFailure: false);
-
+                
+            
                     if (result.Succeeded)
                     {
-                        
+                      if (User.IsInRole("Student"))
+                       {
+                        return RedirectToAction("Index","StudentDashboard");
+                       }
                         return RedirectToAction("Dashboard");
                     }
-                }
+                
 
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
             }
 
             return View(model);
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-        }
-    
+
+      
+
         public async Task<IActionResult> Logout()
         {
-            var user = await _userManager.GetUserAsync(User);
-             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login");
+         
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("index", "home");
         }
         [HttpGet]
         public async Task<IActionResult> Dashboard(string email)
         {
             var user = await _userManager.GetUserAsync(User);
-            
 
+
+
+            return View();
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && await _userManager.IsEmailConfirmedAsync(user))
+                {
+
+
+                    return View("ResetPassword", "Account");
+
+                }
+
+            }
+
+            return View();
+
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
 
             return View();
         }

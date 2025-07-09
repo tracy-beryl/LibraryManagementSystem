@@ -18,7 +18,7 @@ namespace LibraryManagementSystem.Models
                     Email = "moyimeso@gmail.com",
                     StaffName = "Moyi Meso",
                     Department = "Software Systems",
-                    
+
                 },
 
                    new Staff
@@ -27,9 +27,9 @@ namespace LibraryManagementSystem.Models
                        Email = "leahkateb@gmail.com",
                        StaffName = "Leah Kateb",
                        Department = "Information Systems",
-                       
+
                    }
-                ) ;
+                );
 
             modelBuilder.Entity<Admin>().HasData(
 
@@ -38,7 +38,7 @@ namespace LibraryManagementSystem.Models
                     Id = 1,
                     Email = "johndoe@gmail.com",
                     AdminName = "John Doe",
-                    
+
                 },
 
                    new Admin
@@ -50,7 +50,7 @@ namespace LibraryManagementSystem.Models
                    }
                 );
 
-
+            
         }
     }
 }
