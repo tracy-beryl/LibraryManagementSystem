@@ -62,10 +62,26 @@
                 {
 
                     <ul class="navbar-nav d-flex flex-row gap-3 align-items-center">
-                        <li class="nav-item">Home</li>
-                        <li class="nav-item">About Library</li>
+                        <li class="nav-item">
+                            <div>
+                                <a class="navbar-brand" asp-controller="home" asp-action="index">
+                                    <img src="~/images/house.svg" width="20" height="20">
+                                    <span class="navbar-text">Home</span>
+                                </a>
+                            </div>
+                            
+                        </li>
+                        <li class="nav-item"  asp-controller="home" asp-action="about">About Library</li>
                         <li class="nav-item">Services</li>
-                        <li class="nav-item">Books</li>
+                        <li class="nav-item">
+                            <div>
+                                <a class="navbar-brand" asp-controller="book" asp-action="index">
+                                    <img src="~/images/book.svg" width="20" height="20">
+                                  
+                                    <span class="navbar-text">Books</span>
+                                </a>
+                            </div>
+                        </li>
                         <li class="nav-item">New Books</li>
                     </ul>
 
@@ -89,32 +105,50 @@
                         {
                             <ul class="sidebar-menu">
                                 <li style="list-style:none; ">
-                                    <a asp-action="dashboard" asp-controller="account">Dashboard</a>
+                                    <div>
+                                        <a class="navbar-brand" asp-controller="account" asp-action="dashboard">
+                                            <img src="~/images/home.png" width="20" height="20">
+                                            <span class="navbar-text">Dashboard</span>
+                                        </a>
+                                    </div>
                                 </li>
 
                             </ul>
-                        }
+                         }
 
                         <ul class="sidebar-menu">
                             <li style="list-style:none">
-                                <a asp-action="Index" asp-controller="book">Books</a>
+                                <div>
+                                    <a class="navbar-brand" asp-controller="book" asp-action="index">
+                                        <img src="~/images/book.svg" width="20" height="20">
+
+                                        <span class="navbar-text">Books</span>
+                                    </a>
+                                </div>
                             </li>
                         </ul>
-                        @if (!isStudent)
-                        {
+                          @if (!isStudent)
+                           {
 
-                            <ul class="sidebar-menu">
-                                <li style="list-style:none; ">
-                                    <a asp-action="BorrowedBooks" asp-controller="book">Borrowed Books</a>
-                                </li>
-                            </ul>
-                        }
+                                <ul class="sidebar-menu">
+                                    <li style="list-style:none; ">
+                                        <a asp-action="BorrowedBooks" asp-controller="book">Borrowed Books</a>
+                                    </li>
+                                </ul>
+                           }
 
                         @if (isStudent)
                         {
                             <ul class="sidebar-menu">
                                 <li style="list-style:none; ">
-                                    <a asp-action="Index" asp-controller="StudentDashboard">StudentDashboard</a>
+                                    <div>
+                                        <a class="navbar-brand" asp-controller="StudentDashboard" asp-action="index">
+                                            <img src="~/images/home.png" width="20" height="20">
+
+                                            <span class="navbar-text">StudentDashboard</span>
+                                        </a>
+                                    </div>
+                                    
                                 </li>
                             </ul>
                             <ul class="sidebar-menu">
@@ -122,8 +156,6 @@
                                     <a asp-action="MyBorrowedBooks" asp-controller="book">My Borrowed Books</a>
                                 </li>
                             </ul>
-
-
 
                             <ul class="sidebar-menu">
                                 <li style="list-style:none; ">
@@ -154,7 +186,7 @@
                                     <a asp-action="Index" asp-controller="UserManagement">User Management</a>
                                 </li>
                             </ul>
-                        }
+                         }
                     </nav>
                 </div>
 

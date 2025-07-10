@@ -1,5 +1,12 @@
-﻿@model LibraryManagementSystem.ViewModels.RegisterViewModel
+﻿@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
 
+@using Microsoft.AspNetCore.Identity
+@model LibraryManagementSystem.ViewModels.RegisterViewModel
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
+
+}
 @{
     ViewData["Title"] = "Register";
 }
@@ -48,6 +55,7 @@
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
                         </div>
+
                     </form>
                 </div>
                 <div class="card-footer text-center">

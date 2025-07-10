@@ -12,15 +12,10 @@ namespace LibraryManagementSystem.ViewModels
 
         public int TotalBooks { get; set; }
         public int AvailableBooks { get; set; }
-        
+        public int BorrowedBooks { get; set; }
         public int OverdueBooks { get; set; }
-        public int PastPapersCount { get; set; }
+        public int PastPapers { get; set; }
 
-        public string ActiveView { get; set; }
-
-
-        public string SearchString { get; set; }
-        public string SearchType { get; set; }
 
 
     }

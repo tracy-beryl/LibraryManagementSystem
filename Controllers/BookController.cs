@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace LibraryManagementSystem.Controllers
 {
     
@@ -222,6 +223,7 @@ namespace LibraryManagementSystem.Controllers
     
 
         [HttpGet]
+        
         public IActionResult Edit(int id)
         {
             var book = _context.Books.FirstOrDefault(g => g.Id == id);
@@ -266,6 +268,7 @@ namespace LibraryManagementSystem.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Details(int id)
         {
             var book = _context.Books.FirstOrDefault(g => g.Id == id);
@@ -316,7 +319,7 @@ namespace LibraryManagementSystem.Controllers
             var loggedInUser = await _userManager.GetUserAsync(User);
             if (loggedInUser!= null)
             {
-                var loan = _context.Loans.Where(u => u.UserId == loggedInUser.Id).ToList();
+                var loan = _context.Loans.Include(l => l.Book).Where(u => u.UserId == loggedInUser.Id).ToList();
 
                 return View(loan);
             }

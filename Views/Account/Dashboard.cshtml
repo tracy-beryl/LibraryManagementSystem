@@ -1,52 +1,55 @@
-﻿@{
+﻿@model LibraryManagementSystem.ViewModels.DashboardViewModel
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <div class="dashboard-content" style="margin-left: 250px; padding-top: 100px;">
-    <div class="container-fluid">
-        <div class="row g-4 px-4">
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> Total Books</div>
+    @if (Model != null)
+    {
+        <div class="container-fluid">
+            <div class="row g-4 px-4">
+                <div class="col-md-4">
+                    <div class="card bg-light shadow">
+                        <div class="card-body text-center">
+                            <div class="stat-label h5">Total Books: @Model.TotalBooks</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> Available Books</div>
+                <div class="col-md-4">
+                    <div class="card bg-light shadow">
+                        <div class="card-body text-center">
+                            <div class="stat-label h5">Available Books: @Model.AvailableBooks</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> Borrowed Books</div>
+                <div class="col-md-4">
+                    <div class="card bg-light shadow">
+                        <div class="card-body text-center">
+                            <div class="stat-label h5">Borrowed Books: @Model.BorrowedBooks</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> Overdue Books</div>
+                <div class="col-md-4">
+                    <div class="card bg-light shadow">
+                        <div class="card-body text-center">
+                            <div class="stat-label h5">Overdue Books: @Model.OverdueBooks</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> Past Papers</div>
+                <div class="col-md-4">
+                    <div class="card bg-light shadow">
+                        <div class="card-body text-center">
+                            <div class="stat-label h5">Past Papers: @Model.PastPapers</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
+
+     }
     </div>
-</div>
+}
 

@@ -3,9 +3,19 @@
 @inject SignInManager<LibraryManagementSystem.Models.ApplicationUser> signInManager;
 @inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
 
+@inject LibraryManagementSystem.Service.MyService service;
 @{
     var loggedIdUser = await user.GetUserAsync(User);
+    var isStudent = false;
+    if (loggedIdUser != null)
+    {
+        isStudent = await service.IsStudent(loggedIdUser.Id);
+
+        var name = loggedIdUser.Email;
+    }
 }
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -78,18 +88,38 @@
             <div class="container-fluid">
 
                 <ul class="navbar-nav d-flex flex-row gap-3 align-items-center">
-                    <li class="nav-item">Home</li>
-                    <li class="nav-item">About Library</li>
+                    <li class="nav-item">
+                        <div>
+                            <a class="navbar-brand" asp-controller="home" asp-action="index">
+                                <img src="~/images/house.svg" width="30" height="30">
+                                <span class="navbar-text">Home</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item" asp-controller="home" asp-action="about">
+            
+                         About Library
+                    </li>
                     <li class="nav-item">Services</li>
-                    <li class="nav-item">Books</li>
+                    <li class="nav-item">
+                        <div>
+                            <a class="navbar-brand" asp-controller="book" asp-action="index">
+                                <img src="~/images/book.svg" width="20" height="30">
+                                <span class="navbar-text">Books</span>
+                            </a>
+                        </div>
+                    </li>
                     <li class="nav-item">New Books</li>
                 </ul>
 
                 <div class="justify-content-end">
+                   
                     <a asp-controller="account" asp-action="register">Sign-Up</a>
-                    <a asp-controller="account" asp-action="login">Login</a></
+                     
+                    
+                    <a asp-controller="account" asp-action="login">Login</a>
                 </div>
-                
+
             </div>
         </nav>
 

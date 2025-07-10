@@ -2,37 +2,36 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@model LibraryManagementSystem.ViewModels.BorrowBookViewModel
+@model List<LibraryManagementSystem.Models.Loan>
 
-<h2>My Borrowed Books</h2>
+    <div class="container-md">
+        <h3 class="mb-4">My Borrowed Books</h3>
 
-@if (Model.Loans != null && Model.Loans.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Loan Date</th>
-                <th>Due Date</th>
-                <th>Returned</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var loan in Model.Loans)
-            {
-                <tr>
-                    <td>@loan.Book?.Title</td>
-                    <td>@loan.LoanDate.ToShortDateString()</td>
-                    <td>@loan.DueDate.ToShortDateString()</td>
-                    <td>@(loan.ReturnDate != null ? loan.ReturnDate?.ToShortDateString() : "Not Returned")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>You haven't borrowed any books yet.</p>
-}
+        @if (!Model.Any())
+        {
+            <p>You currently have no borrowed books.</p>
+        }
+        else
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Borrowed On</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loan in Model)
+                    {
+                        <tr>
+                            <td>@loan.Book.Title</td>
+                            <td>@loan.LoanDate.ToShortDateString()</td>
+                            <td>@loan.DueDate.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
 
-
+    </div>

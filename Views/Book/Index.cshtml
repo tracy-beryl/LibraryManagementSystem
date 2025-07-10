@@ -1,24 +1,40 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@model LibraryManagementSystem.ViewModels.BookViewModel;
+@inject LibraryManagementSystem.Service.MyService service;
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
+
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-@model LibraryManagementSystem.ViewModels.BookViewModel;
 
+@{
+    var loggedIdUser = await user.GetUserAsync(User);
+    var isStudent = false;
+    if (loggedIdUser != null)
+    {
+        isStudent = await service.IsStudent(loggedIdUser.Id);
 
+        var name = loggedIdUser.Email;
+    }
+}
 
 <div class="container-md">
     <h2>Books List</h2>
 
-    <div class="container">
-        <div class="d-flex justify-content-end gap-2 mb-3">
-            <a asp-action="Create" asp-controller="Book">Create</a>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#borrowBooks">
-                Borrow
-            </button>
+    @if (!isStudent)
+    {
+        <div class="container">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a asp-action="Create" asp-controller="Book">Create</a>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#borrowBooks">
+                    Borrow
+                </button>
+            </div>
         </div>
-    </div>
-
+    }
 
 
     <table id="example" class="table table-bordered table-striped">
@@ -32,7 +48,12 @@
                 <th>Category</th>
                 <th>PhotoPath</th>
                 <th>BorrowingDays</th>
-                <th colspan="2">Actions</th>
+                @if (!isStudent)
+                {
+                    <th colspan="2">Actions</th>
+
+                }
+
             </tr>
         </thead>
         <tbody>
@@ -52,43 +73,47 @@
                         </td>
 
                         <td>@item.BorrowingDays</td>
-                        <td>
-                            <button type="button"
-                                    class="btn btn-primary details-button"
-                                    data-toggle="modal"
-                                    data-target="#detailsModal"
-                                    data-id="@item.Id"
-                                    data-title="@item.Title"
-                                    data-author="@item.Author"
-                                    data-isbn="@item.ISBN"
-                                    data-totalcopies="@item.TotalCopies"
-                                    data-availablecopies="@item.AvailableCopies"
-                                    data-category="@item.Category"
-                                    data-borrowingdays="@item.BorrowingDays"
-                                    data-photopath="@item.PhotoPath">
-                                Details
-                            </button>
-                        </td>
+
+                        @if (!isStudent)
+                         {
+                            <td>
+                                <button type="button"
+                                        class="btn btn-primary details-button"
+                                        data-toggle="modal"
+                                        data-target="#detailsModal"
+                                        data-id="@item.Id"
+                                        data-title="@item.Title"
+                                        data-author="@item.Author"
+                                        data-isbn="@item.ISBN"
+                                        data-totalcopies="@item.TotalCopies"
+                                        data-availablecopies="@item.AvailableCopies"
+                                        data-category="@item.Category"
+                                        data-borrowingdays="@item.BorrowingDays"
+                                        data-photopath="@item.PhotoPath">
+                                    Details
+                                </button>
+                            </td>
 
 
-                        <td>
-                            <button type="button"
-                                    class="btn btn-primary edit-button"
-                                    data-toggle="modal"
-                                    data-target="#editModal"
-                                    data-id="@item.Id"
-                                    data-title="@item.Title"
-                                    data-author="@item.Author"
-                                    data-isbn="@item.ISBN"
-                                    data-totalcopies="@item.TotalCopies"
-                                    data-availablecopies="@item.AvailableCopies"
-                                    data-category="@item.Category"
-                                    data-borrowingdays="@item.BorrowingDays"
-                                    data-photopath="@item.PhotoPath">
-                                Edit
-                            </button>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-primary edit-button"
+                                        data-toggle="modal"
+                                        data-target="#editModal"
+                                        data-id="@item.Id"
+                                        data-title="@item.Title"
+                                        data-author="@item.Author"
+                                        data-isbn="@item.ISBN"
+                                        data-totalcopies="@item.TotalCopies"
+                                        data-availablecopies="@item.AvailableCopies"
+                                        data-category="@item.Category"
+                                        data-borrowingdays="@item.BorrowingDays"
+                                        data-photopath="@item.PhotoPath">
+                                    Edit
+                                </button>
 
-                        </td>
+                            </td>
+                        }
                     </tr>
                 }
             }

@@ -1,4 +1,6 @@
 ﻿using LibraryManagementSystem.Models;
+using LibraryManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,18 +11,33 @@ namespace LibraryManagementSystem.Controllers
 {
     public class StudentDashboardController : Controller
     {
-        private readonly LibraryDbContext _libraryDbContext;
+        private readonly LibraryDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public StudentDashboardController(LibraryDbContext libraryDbContext)
+        public StudentDashboardController(LibraryDbContext context,UserManager<ApplicationUser> userManager)
         {
-            _libraryDbContext = libraryDbContext;
+            _context = context;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var myBorrowedBooks = _context.Loans.Count(l => l.UserId == user.Id && l.ReturnDate == null);
+            var myReturnedBooks = _context.Loans.Count(l => l.UserId == user.Id && l.ReturnDate != null);
+
+            var viewModel = new StudentDashboardViewModel
+            {
+                MyBorrowedBooks = myBorrowedBooks,
+                MyHistory = myReturnedBooks
+            };
+
+            return View(viewModel);
         }
 
-        
+
     }
 }

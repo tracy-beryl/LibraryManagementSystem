@@ -1,4 +1,5 @@
-﻿@{
+﻿@model LibraryManagementSystem.ViewModels.StudentDashboardViewModel
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,7 +10,7 @@
             <div class="col-md-4">
                 <div class="card bg-light shadow">
                     <div class="card-body text-center">
-                        <div class="stat-label h5"> MyBorrowedBooks</div>
+                        <div class="stat-label h5"> My Borrowed Books : @Model.MyBorrowedBooks</div>
                     </div>
                 </div>
             </div>
@@ -17,7 +18,7 @@
             <div class="col-md-4">
                 <div class="card bg-light shadow">
                     <div class="card-body text-center">
-                        <div class="stat-label h5">MyHistory</div>
+                        <div class="stat-label h5">My History: @Model.MyHistory</div>
                     </div>
                 </div>
             </div>

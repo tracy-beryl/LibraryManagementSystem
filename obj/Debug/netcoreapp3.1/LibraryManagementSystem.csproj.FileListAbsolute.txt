@@ -176,4 +176,5 @@ C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.
 C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\Account\ResetPassword.cshtml.g.cs
 C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\Book\MyBorrowedBooks.cshtml.g.cs
 C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\Book\MyHistory.cshtml.g.cs
-C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\StudentDashboard\StudentDashboard.cshtml.g.cs
+C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\StudentDashboard\Index.cshtml.g.cs
+C:\Users\USER\Desktop\Development\LibraryManagementSystem\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_AuthLayout.cshtml.g.cs

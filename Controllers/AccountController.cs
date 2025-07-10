@@ -90,26 +90,28 @@ namespace LibraryManagementSystem.Controllers
                 var result = await _signInManager.PasswordSignInAsync(
                     model.Email, model.Password, model.RememberMe, false);
 
-                
-            
-                    if (result.Succeeded)
-                    {
-                      if (User.IsInRole("Student"))
-                       {
-                        return RedirectToAction("Index","StudentDashboard");
-                       }
-                        return RedirectToAction("Dashboard");
-                    }
-                
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(model.Email);
 
-                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                    if (user != null)
+                    {
+                        if (await _userManager.IsInRoleAsync(user, "Student"))
+                        {
+                            return RedirectToAction("Index", "StudentDashboard");
+                        }
+
+                        return RedirectToAction("Dashboard", "Account"); 
+                    }
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
             return View(model);
         }
 
 
-      
 
         public async Task<IActionResult> Logout()
         {
@@ -117,16 +119,29 @@ namespace LibraryManagementSystem.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("index", "home");
         }
-        [HttpGet]
-        public async Task<IActionResult> Dashboard(string email)
+        
+        public IActionResult Dashboard()
         {
-            var user = await _userManager.GetUserAsync(User);
+            
+
+        var totalBooks = _context.Books.Count();
+        var availableBooks = _context.Books.Sum(b => b.AvailableCopies);
+        var borrowedBooks = _context.Loans.Count();
+        var overdueBooks = _context.Loans.Count(l => l.DueDate < DateTime.Now && l.ReturnDate == null);
+        var pastPapers = _context.PastPapers.Count();
+
+        var model = new DashboardViewModel
+           {
+            TotalBooks = totalBooks,
+            AvailableBooks = availableBooks,
+            BorrowedBooks = borrowedBooks,
+            OverdueBooks = overdueBooks,
+            PastPapers = pastPapers
+         };
 
 
-
-            return View();
+            return View(model);
         }
-
 
         [HttpGet]
         [AllowAnonymous]
