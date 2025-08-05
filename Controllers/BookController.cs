@@ -28,38 +28,70 @@ namespace LibraryManagementSystem.Controllers
         }
 
 
+
         public ActionResult Index()
         {
             var model = new BookViewModel();
 
-            
-            var books = _context.Books.ToList();
-
-            
-            var activeLoans = _context.Loans
-                .Where(c => c.ReturnDate == null && c.BookId != null)
+            var allBooks = _context.Books
+                .Include(b => b.Loans)
                 .ToList();
 
+            var activeLoans = _context.Loans
+                .Where(l => l.ReturnDate == null && l.BookId != null)
+                .ToList();
 
             var loanCounts = activeLoans
                 .GroupBy(l => l.BookId)
                 .Select(g => new { BookId = g.Key, Count = g.Count() })
                 .ToDictionary(g => g.BookId, g => g.Count);
 
-           
-            foreach (var book in books)
+            foreach (var book in allBooks)
             {
                 int borrowedCount = loanCounts.ContainsKey(book.Id) ? loanCounts[book.Id] : 0;
                 book.AvailableCopies = book.TotalCopies - borrowedCount;
             }
 
-            model.Books = books;
+            var borrowableBooks = allBooks
+                .Where(b => b.IsBorrowable && b.AvailableCopies > 0)
+                .ToList();
+
+            model.AllBooks = allBooks; // Full list for display table
+            model.Books = borrowableBooks; // Only borrowable books for modal
             model.Users = _context.Users.ToList();
 
             return View(model);
         }
 
-        
+
+        public string GenerateRefrenceNumber()
+        {
+            int nextReferencenumber = 001;
+            var settings = _context.Settings.FirstOrDefault();
+            if(settings.ShortCode != null)
+            {
+            }
+            else
+            {
+                settings.ShortCode = "KCA";
+            }
+            var previousbook = _context.Books.Where(c => c.ReferenceNumber != null && c.ReferenceNumber.StartsWith(settings.ShortCode)).OrderByDescending( c => c.Id).FirstOrDefault();
+            if (previousbook != null && settings.ShortCode != null)
+            {
+                var previousRefrencenumber = previousbook.ReferenceNumber;
+                if (previousRefrencenumber.StartsWith(settings.ShortCode))
+                {
+                    var numberSection = previousRefrencenumber.Substring(settings.ShortCode.Length);
+                    if (int.TryParse(numberSection,out int nextNumber))
+                    {
+                        nextReferencenumber = nextNumber + 1;
+
+                    }
+                }
+            }
+            var finalRefrencenumber = $"{settings.ShortCode}{nextReferencenumber}";
+                return  finalRefrencenumber;
+        }
 
 
         [HttpGet]
@@ -74,61 +106,80 @@ namespace LibraryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
+                string photoFileName = null;
 
-                string uniqueFileName = null;
-                    if (model.Photo != null)
-                    {
 
+                // Photo Upload
+                if (model.Photo != null)
+                {
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
                     Directory.CreateDirectory(uploadsFolder);
+                    photoFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+                    var photoPath = Path.Combine(uploadsFolder, photoFileName);
+                    model.Photo.CopyTo(new FileStream(photoPath, FileMode.Create));
+                }
 
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        
-                        model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
-                    }
-                    var book = new Book
-                    {
+                var refrenceNumber = GenerateRefrenceNumber();
+
+                var book = new Book
+                {
                     Title = model.Title,
                     Author = model.Author,
                     ISBN = model.ISBN,
                     TotalCopies = model.TotalCopies,
                     AvailableCopies = model.AvailableCopies,
-                    PhotoPath =uniqueFileName,
+                    PhotoPath = photoFileName,
                     Category = model.Category,
-                    BorrowingDays = model.BorrowingDays
-
+                    BorrowingDays = model.BorrowingDays,
+                    IsBorrowable = model.IsBorrowable,
+                    ReferenceNumber = refrenceNumber
                 };
+
                 _context.Books.Add(book);
                 _context.SaveChanges();
-                RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
-            return View();
+
+            return View(model);
         }
 
 
+
         [HttpGet]
-        
         public IActionResult BorrowedBooks()
         {
             var allLoans = _context.Loans
-                 .Include(l => l.User)
-                 .Include(l => l.Book)
+                .Include(l => l.User)
+                .Include(l => l.Book)
                 .ToList();
-           
-          
+
+            var books = _context.Books
+                .Include(b => b.Loans)
+                .Where(b => b.IsBorrowable)
+                .ToList();
+
+            foreach (var book in books)
+            {
+                var borrowedCount = book.Loans.Count(l => l.ReturnDate == null);
+                book.AvailableCopies = book.TotalCopies - borrowedCount;
+            }
+
+            books = books.Where(b => b.AvailableCopies > 0).ToList();
 
             var model = new BorrowBookViewModel
             {
                 Loans = allLoans,
                 Users = _context.Users.ToList(),
-                Books = _context.Books.ToList(),
+                Books = books,
                 LoanDate = DateTime.Now,
                 DueDate = DateTime.Now.AddDays(2)
-            
             };
-                  return View(model);
+
+            return View(model);
         }
+
+
+
 
         [HttpPost]
         public IActionResult BorrowedBooks(BookViewModel model)

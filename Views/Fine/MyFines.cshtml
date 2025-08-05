@@ -1,0 +1,48 @@
+﻿@model List<LibraryManagementSystem.ViewModels.FineViewModel>
+
+@{
+    ViewData["Title"] = "My Fines";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <h2>My Overdue Fines</h2>
+
+        <div class="table-responsive">
+            <table id="fineTable" class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Book</th>
+                        <th>Due Date</th>
+                        <th>Days Late</th>
+                        <th>Fine Amount (KES)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ 
+                        int count = 1;
+                    }
+                    @foreach (var fine in Model)
+                    {
+                        <tr class="@(fine.DaysLate > 0 ? "table-danger" : "")">
+                            <td>@count</td>
+                            <td>@fine.BookTitle</td>
+                            <td>@fine.DueDate.ToShortDateString()</td>
+                            <td>@fine.DaysLate</td>
+                            <td>@fine.FineAmount</td>
+                        </tr>
+                        count++;
+                    }
+                </tbody>
+            </table>
+
+             </div>
+     
+           
+
+</div>
+
+<script>
+     new DataTable('#finesTable');
+</script>

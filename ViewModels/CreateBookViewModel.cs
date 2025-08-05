@@ -26,5 +26,7 @@ namespace LibraryManagementSystem.ViewModels
         public string BorrowingDays { get; set; }
 
         public IFormFile Photo { get; set; }
+        public bool IsBorrowable { get; set; }
+
     }
 }

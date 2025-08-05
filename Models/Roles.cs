@@ -11,5 +11,6 @@ namespace LibraryManagementSystem.Models
         public string Id { get; set; }
         public bool IsStudent { get; set; }
         public string RoleName { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

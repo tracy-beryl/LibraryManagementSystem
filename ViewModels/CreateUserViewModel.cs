@@ -30,6 +30,9 @@ namespace LibraryManagementSystem.ViewModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        public string IdentificationNumber { get; set; }
+
 
     }
 }

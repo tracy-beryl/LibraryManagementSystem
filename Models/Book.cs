@@ -28,5 +28,10 @@ namespace LibraryManagementSystem.Models
 
         public string PhotoPath { get; set; }
         public ICollection<Loan> Loans { get; set; }
+        public bool IsBorrowable { get; set; }
+        public string ReferenceNumber { get; set; }
+
+
+
     }
 }

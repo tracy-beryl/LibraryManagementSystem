@@ -3,26 +3,38 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<div class="container bg-dark py-5 mt-5">
+    <h3 class="mb-1 fw-bold">Hello, @Model.FirstName</h3>
+    <p class="mb-2">Today is @DateTime.Now.ToString("dddd, MMMM dd, yyyy - hh:mm tt")</p>
 
-<div class="dashboard-content" style="margin-left: 250px; padding-top: 100px;">
-    <div class="container-fluid">
-        <div class="row g-4 px-4">
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5"> My Borrowed Books : @Model.MyBorrowedBooks</div>
+    <div class="row justify-content-center g-4">
+         @*Borrowed Books*@ 
+        <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+            <div class="card shadow border-0 h-100" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white;">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-book-fill fs-1"></i>  @*Bootstrap Icon*@ 
                     </div>
+                    <h5 class="fw-light">My Borrowed Books</h5>
+                    <p class="display-6 fw-bold">@Model.MyBorrowedBooks</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card bg-light shadow">
-                    <div class="card-body text-center">
-                        <div class="stat-label h5">My History: @Model.MyHistory</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
-     </div>
+
+         @*History*@ 
+        <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+            <div class="card shadow border-0 h-100 " style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
+                    <h5 class="fw-light">My History</h5>
+                    <p class="display-6 fw-bold">@Model.MyHistory</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+

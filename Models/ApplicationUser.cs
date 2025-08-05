@@ -14,11 +14,14 @@ namespace LibraryManagementSystem.Models
         public string LastName { get; set; }
 
         public string FullName { get; set; }
-        public string StudentId { get; set; }
+        public string IdentificationNumber { get; set; }
 
         public string RoleId { get; set; }
-        
+        public bool IsActive { get; set; } = true;
 
         public ICollection<Loan> Loans { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? LastLoginDate { get; set; }
+        
     }
 }

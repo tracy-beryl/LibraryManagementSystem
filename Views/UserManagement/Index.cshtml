@@ -1,188 +1,170 @@
 ﻿@model LibraryManagementSystem.ViewModels.UserAndRoleViewModel
 
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container-md">
-    <div class="card-header bg-white" role="tablist">
-        <button class="btn btn-primary active" id="nav-users-tab" data-bs-toggle="tab"
+
+<div class="container-fluid py-4">
+    <!-- Tabs Header -->
+    <div class="card-header bg-white d-flex flex-wrap gap-2 mb-3" role="tablist">
+        <button class="btn btn-dark active" id="nav-users-tab" data-bs-toggle="tab"
                 data-bs-target="#Users" aria-selected="true" aria-controls="Users" type="button">
             Users
         </button>
 
-        <button class="btn btn-primary" id="nav-roles-tab" data-bs-toggle="tab"
+        <button class="btn btn-dark" id="nav-roles-tab" data-bs-toggle="tab"
                 data-bs-target="#Roles" aria-selected="false" aria-controls="Roles" type="button">
             Roles
         </button>
     </div>
 
     <div class="tab-content">
-
-        <div class="tab-pane fade show active shadow" id="Users" role="tabpanel" aria-labelledby="nav-users-tab">
-
-            <div>
-                <a class="float-right mb-md-3" asp-action="CreateUser" asp-controller="UserManagement">Create</a>
+        <!-- USERS TAB -->
+        <div class="tab-pane fade show active shadow-sm p-3 bg-white rounded" id="Users" role="tabpanel">
+            <div class="d-flex justify-content-end mb-3">
+                <a class="btn btn-sm btn-outline-dark" asp-action="CreateUser" asp-controller="UserManagement">Create User</a>
             </div>
 
-            <table id="users-table" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>FullName</th>
-                        <th>Email</th>
-                        <th>PhoneNumber</th>
-                        <th>Role</th>
-                        <th colspan="2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model.Users)
-                    {
+            <div class="table-responsive">
+                <table id="users-table" class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@user.FullName</td>
-                            <td>@user.Email</td>
-                            <td>@user.PhoneNumber</td>
-                            <td>@user.Role</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editUserModal"
-                                        data-email="@user.Email"
-                                        data-fullname="@user.FullName"
-                                        data-phonenumber="@user.PhoneNumber">
-                                    Edit
-                                </button>
-
-
-                            </td>
-
-                            <td>
-                                <form method="post" asp-action="DeleteUser" asp-controller="UserManagement"
-                                      onsubmit="return confirmUserDelete(event)">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="email" value="@user.Email" />
-                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </td>
-
-
-
+                            <th>No</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th colspan="2" class="text-center">Actions</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int count = 1;
+                        }
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.Role</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-dark"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editUserModal"
+                                            data-email="@user.Email"
+                                            data-fullname="@user.FullName"
+                                            data-phonenumber="@user.PhoneNumber">
+                                        Edit
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form method="post" asp-action="DeactivateUser" asp-controller="UserManagement"
+                                          onsubmit="return confirmUserDeactivate(event)">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="email" value="@user.Email" />
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">Close</button>
+                                    </form>
 
+                                </td>
+                            </tr>
 
-                       
-                    }
-                </tbody>
-
-            </table>
+                            count++;
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-
-
-
-        <div class="tab-pane fade shadow" id="Roles" role="tabpanel" aria-labelledby="nav-roles-tab">
-
-            <div>
-                <button class="btn btn-primary float-right" data-bs-toggle="modal" data-bs-target="#createRoleModal">Create</button>
-
+        <!-- ROLES TAB -->
+        <div class="tab-pane fade shadow-sm p-3 bg-white rounded" id="Roles" role="tabpanel">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createRoleModal">Create Role</button>
             </div>
 
+            <div class="table-responsive">
+                <table id="roles-table" class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Role</th>
+                            <th colspan="2" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <tr>
+                                <td>@role.RoleName</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editRoleModal"
+                                            data-rolename="@role.RoleName">
+                                        Edit
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form method="post" asp-action="DeactivateRole" asp-controller="UserManagement"
+                                          onsubmit="return confirmRoleDeactivate(event)">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="roleName" value="@role.RoleName" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">Close</button>
+                                    </form>
 
-            <div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="createRoleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form asp-action="CreateRole" asp-controller="UserManagement" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editRoleModalLongTitle">Create New Role</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <input name="RoleName" class="form-control" placeholder="Name" required />
-                                    <span class="text-danger">@Html.ValidationMessage("RoleName")</span>
 
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck">
-                                    <label class="form-check-label" for="gridCheck">
-                                        IsSelected
-                                    </label>
-                                </div>
+<div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form asp-action="CreateRole" asp-controller="UserManagement" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoleModalLongTitle">Create New Role</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
-                            </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input name="RoleName" class="form-control" placeholder="Name" required />
+                        <span class="text-danger">@Html.ValidationMessage("RoleName")</span>
 
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success">Save changes</button>
-                            </div>
-
-                        </form>
-
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gridCheck">
+                        <label class="form-check-label" for="gridCheck">
+                            IsSelected
+                        </label>
                     </div>
 
                 </div>
 
-            </div>
+                <div class="modal-footer">
+                    <button class="btn btn-dark" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark">Save changes</button>
+                </div>
 
-            <table id="roles-table" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-
-                        <th>Role</th>
-                        <th colspan="2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    @foreach (var role in Model.Roles)
-                    {
-                        <tr>
-
-                            <td>@role.RoleName</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editRoleModal"
-                                        data-rolename="@role.RoleName">
-                                    Edit
-                                </button>
-
-
-
-                            </td>
-
-
-                            <td>
-                                <form method="post" asp-action="DeleteRole" asp-controller="UserManagement"
-                                      onsubmit="return confirmRoleDelete(event)">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="roleName" value="@role.RoleName" />
-                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </td>
-
-
-
-                        </tr>
-                        
-
-                    }
-                </tbody>
-
-
-
-            </table>
-
-
-
-
+            </form>
 
         </div>
+
     </div>
+
 </div>
+
+
+
+
 
 
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
@@ -205,8 +187,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save changes</button>
+                    <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark">Save changes</button>
                 </div>
             </form>
         </div>
@@ -232,8 +214,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark">Save Changes</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
@@ -243,14 +225,14 @@
 
 
 <script>
-    function confirmUserDelete(event) {
+    function confirmUserDeactivate(event) {
         event.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This user will be permanently deleted.',
+            text: 'This user will be deactivated and cannot log in.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete user!',
+            confirmButtonText: 'Yes, deactivate user!',
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6'
@@ -262,14 +244,14 @@
         return false;
     }
 
-    function confirmRoleDelete(event) {
+    function confirmRoleDeactivate(event) {
         event.preventDefault();
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This role will be permanently deleted.',
+            text: 'This role will be deactivated and unavailable to assign.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete role!',
+            confirmButtonText: 'Yes, deactivate role!',
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6'
@@ -281,6 +263,7 @@
         return false;
     }
 </script>
+
 
 <script>
     const editUserModal = document.getElementById('editUserModal');
@@ -313,7 +296,68 @@
     });
 </script>
 
+<script>
+    $(document).ready(function () {
+        new DataTable('#users-table', {
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            title: '',
+                            customize: function (win) {
+                                const logoUrl = '/images/logo.png';
+                                const institutionName = 'KCA University';
+                                const heading = `
+                                <div style="display: flex; justify-content: space-between;">
+                                    <img src="${logoUrl}" height="50" />
+                                    <div style="text-align: right;">
+                                        <strong>${institutionName}</strong><br/>
+                                        P.O. Box 56808, Nairobi<br/>
+                                        Tel: +254 20 8646103 / 8646108
+                                    </div>
+                                </div>
+                                <hr/>
+                                <p><strong>Users</strong></p>
+                            `;
+                                $(win.document.body).prepend(heading);
+                            },
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4]
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+    });
 
+
+</script>
 
 
 

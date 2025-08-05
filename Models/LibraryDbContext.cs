@@ -21,6 +21,9 @@ namespace LibraryManagementSystem.Models
         public DbSet<Loan> Loans { get; set; }
         public DbSet<PastPapers> PastPapers { get; set; }
         public DbSet<Roles> Roles { get; set; }
+        public DbSet<SoftCopy> SoftCopies { get; set; }
+        public DbSet<Settings> Settings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

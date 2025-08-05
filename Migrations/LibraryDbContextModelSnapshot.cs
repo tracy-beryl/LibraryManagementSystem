@@ -67,6 +67,9 @@ namespace LibraryManagementSystem.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -79,6 +82,15 @@ namespace LibraryManagementSystem.Migrations
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentificationNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -112,9 +124,6 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -139,17 +148,19 @@ namespace LibraryManagementSystem.Migrations
                         {
                             Id = "8b8b820f-bf84-4ffe-87bd-be619179d833",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fb7b5d15-dc89-4076-a44b-46773f609efc",
+                            ConcurrencyStamp = "786a581b-2b97-4995-abdc-196496e5f059",
+                            CreatedAt = new DateTime(2025, 7, 24, 11, 41, 12, 456, DateTimeKind.Local).AddTicks(747),
                             Email = "johndoe@gmail.com",
                             EmailConfirmed = true,
                             FullName = "John Doe",
+                            IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHNDOE@GMAIL.COM",
                             NormalizedUserName = "JOHNDOE@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECU+jeMV4TPvpxcstgPoXPpp70DQlKf8fptvF4qOTeJFtU09x1VtUnTDfbM/21R0+g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEM63R4yuKbdt7WtKeCQNuyaMgmw7EdmjFsZ18/hO268GZ6zNEZANgwfkaGaH0xNZbQ==",
                             PhoneNumberConfirmed = false,
                             RoleId = "e577164a-6f5f-4f2d-8f2d-f58bd6a1e8f8",
-                            SecurityStamp = "6d4af22d-5064-4457-97ca-a98f0bbc91d8",
+                            SecurityStamp = "470bde73-ad6e-4f33-93ae-51e999d02c3f",
                             TwoFactorEnabled = false,
                             UserName = "johndoe@gmail.com"
                         });
@@ -180,7 +191,13 @@ namespace LibraryManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsBorrowable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PhotoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -270,6 +287,9 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsStudent")
                         .HasColumnType("bit");
 
@@ -284,21 +304,75 @@ namespace LibraryManagementSystem.Migrations
                         new
                         {
                             Id = "4b729351-7f04-4e51-9c7e-017fdf369e01",
+                            IsActive = true,
                             IsStudent = false,
                             RoleName = "Admin"
                         },
                         new
                         {
                             Id = "5eba0279-cee8-40b6-92e9-fd54ba4a5b60",
+                            IsActive = true,
                             IsStudent = false,
                             RoleName = "Staff"
                         },
                         new
                         {
                             Id = "25272b90-aa34-44d3-89cf-1ca24037ca92",
+                            IsActive = true,
                             IsStudent = true,
                             RoleName = "Student"
                         });
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Settings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("LogoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.SoftCopy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SoftCopies");
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Models.Staff", b =>

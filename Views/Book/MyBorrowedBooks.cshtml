@@ -3,35 +3,43 @@
 }
 
 @model List<LibraryManagementSystem.Models.Loan>
-
-    <div class="container-md">
+    <div class="container-fluid py-4">
         <h3 class="mb-4">My Borrowed Books</h3>
 
-        @if (!Model.Any())
-        {
-            <p>You currently have no borrowed books.</p>
-        }
-        else
-        {
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Borrowed On</th>
-                        <th>Due Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var loan in Model)
-                    {
+        
+            <div class="table-responsive">
+                <table id="example" class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@loan.Book.Title</td>
-                            <td>@loan.LoanDate.ToShortDateString()</td>
-                            <td>@loan.DueDate.ToShortDateString()</td>
+                            <th>No</th>
+                            <th>Title</th>
+                            <th>Borrowed On</th>
+                            <th>Due Date</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
+                    </thead>
+                    <tbody>
+                        @{ 
+                            int count = 1;
+                        }
+                        @foreach (var loan in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@loan.Book.Title</td>
+                                <td>@loan.LoanDate.ToShortDateString()</td>
+                                <td>@loan.DueDate.ToShortDateString()</td>
+                            </tr>
+                            count++;
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        
 
     </div>
+
+    <script>
+        new DataTable('#example');
+    </script>

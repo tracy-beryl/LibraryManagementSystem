@@ -7,67 +7,83 @@
 
 
 
-<div class="container-md">
+<div class="container-fluid py-4">
     <h2>Borrowed Books</h2>
 
-    <table id="example" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Book Title</th>
-                <th>Student Name</th>
-                <th>Loan Date</th>
-                <th>Return Date</th>
-                <th>Due Date</th>
-                <th>Return</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Loans.Count > 0)
-            {
-                @foreach (var loan in Model.Loans)
-                {
-                    <tr>
-                        <td>@loan.Book.Title</td>
-                        <td>@loan.User.FullName</td>
-                        <td>@loan.LoanDate.ToShortDateString()</td>
-                        <td>
-                            @if (loan.ReturnDate == null)
-                            {
-                                <span class="text-danger">Not Returned</span>
-                            }
-                            else
-                            {
-                                <span class="text-success">Returned on @loan.ReturnDate.Value.ToShortDateString()</span>
-                            }
-                        </td>
-                        <td>@loan.DueDate.ToShortDateString()</td>
-                        <td>
-                            <button type="button"
-                                    class="btn btn-primary return-book-btn"
-                                    data-loanid="@loan.Id"
-                                    data-studentid="@loan.User.Id">
-                                Return Book
-                            </button>
 
-
-                        </td>
-
-                    </tr>
+    <div class="table-responsive">
+        <table id="example" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Book Title</th>
+                    <th>Student Name</th>
+                    <th>Loan Date</th>
+                    <th>Return Date</th>
+                    <th>Due Date</th>
+                    <th>Return</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ 
+                    int count = 1;
                 }
+                @if (Model.Loans.Count > 0)
+                {
+                    @foreach (var loan in Model.Loans)
+                    {
+                        <tr>
+                            <td>@count</td>
+                            <td>@loan.Book.Title</td>
+                            <td>@loan.User.FullName</td>
+                            <td>@loan.LoanDate.ToShortDateString()</td>
+                            <td>
+                                @if (loan.ReturnDate == null)
+                                {
+                                    <span class="text-danger">Not Returned</span>
+                                }
+                                else
+                                {
+                                    <span class="text-success">Returned on @loan.ReturnDate.Value.ToShortDateString()</span>
+                                }
+                            </td>
+                            <td>@loan.DueDate.ToShortDateString()</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-dark return-book-btn"
+                                        data-loanid="@loan.Id"
+                                        data-studentid="@loan.User.Id">
+                                    Return Book
+                                </button>
 
-            }
-    </table>
+
+                            </td>
 
 
+                        </tr>
+                        count++;
+                    }
 
-</div>
+                }
+        </table>
+
+    </div>
+
+    </div>
 
 
 <script>
-    new DataTable('#example');
+
+    new DataTable('#example', {
+        layout: {
+            topStart: {
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            }
+        }
+    });
 </script>
 
-<script>
+    <script>
     $(document).on('click', '.return-book-btn', function () {
         var loanId = $(this).data('loanid');
         var studentId = $(this).data('studentid');
@@ -101,7 +117,7 @@
             }
         });
     });
-</script>
+    </script>
 
 
 

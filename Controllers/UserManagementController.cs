@@ -16,33 +16,34 @@ namespace LibraryManagementSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly LibraryDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-
-
-        public UserManagementController(UserManager<ApplicationUser> userManager, LibraryDbContext context)
+        public UserManagementController(UserManager<ApplicationUser> userManager, LibraryDbContext context, RoleManager<IdentityRole> roleManager)
         {
 
             _userManager = userManager;
             _context = context;
+            _roleManager = roleManager;
         }
 
 
         public IActionResult Index()
         {
             var users = _userManager.Users
-         .Select(u => new UserListViewModel
-         {
-             FullName = u.FullName,
-             Email = u.Email,
-             PhoneNumber = u.PhoneNumber,
-             Role = _context.Roles
-                    .Where(r => r.Id == u.RoleId)
-                    .Select(r => r.RoleName)
-                    .FirstOrDefault()
-         }).ToList();
-
+                .Where(u => u.IsActive) // Only active users
+                .Select(u => new UserListViewModel
+                {
+                    FullName = u.FullName,
+                    Email = u.Email,
+                    PhoneNumber = u.PhoneNumber,
+                    Role = _context.Roles
+                            .Where(r => r.Id == u.RoleId && r.IsActive) // Only active roles
+                            .Select(r => r.RoleName)
+                            .FirstOrDefault()
+                }).ToList();
 
             var roles = _context.Roles
+                .Where(r => r.IsActive) // Only active roles
                 .Select(r => new CreateRoleViewModel
                 {
                     RoleName = r.RoleName
@@ -56,6 +57,7 @@ namespace LibraryManagementSystem.Controllers
 
             return View(viewModel);
         }
+
 
 
 
@@ -86,7 +88,8 @@ namespace LibraryManagementSystem.Controllers
                     Email = model.Email,
                     FullName = model.FullName,
                     PhoneNumber = model.PhoneNumber,
-                    RoleId = selectedRole.Id 
+                    RoleId = selectedRole.Id,
+                    IdentificationNumber= model.IdentificationNumber
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -94,7 +97,7 @@ namespace LibraryManagementSystem.Controllers
                 if (result.Succeeded)
                 {
                     
-                    await _userManager.AddToRoleAsync(user, selectedRole.RoleName);
+                    //await _userManager.AddToRoleAsync(user, selectedRole.RoleName);
 
                     return RedirectToAction("Index");
                 }
@@ -141,24 +144,26 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteUser()
+        public IActionResult DeactivateUser()
         {
 
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> DeleteUser(string email)
+        public async Task<IActionResult> DeactivateUser(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user != null)
             {
-                var result = await _userManager.DeleteAsync(user);
+                user.IsActive = false;
+                var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                     return RedirectToAction("Index");
             }
 
             return NotFound();
         }
+
 
         [HttpGet]
         public IActionResult CreateRole()
@@ -213,18 +218,19 @@ namespace LibraryManagementSystem.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DeleteRole(string roleName)
+        public async Task<IActionResult> DeactivateRole(string roleName)
         {
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
             if (role != null)
             {
-                _context.Roles.Remove(role);
+                role.IsActive = false;
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
             return NotFound();
         }
+
 
 
     }

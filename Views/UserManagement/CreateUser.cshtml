@@ -5,69 +5,102 @@
 }
 
 <div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="row justify-content-center w-100">
-        <div class="col-md-6">
-            <div class="container-fluid">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="text-center">Create a New User</h2>
-                </div>
-                <div class="card-body">
-                    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-sm-12">
+                <div class="card shadow">
+                    <div class="card-header bg-secondary text-white text-center">
+                        <h4>Create a New User</h4>
+                    </div>
+                    <div class="card-body">
+                        <form class="row g-3" asp-action="CreateUser" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <form class="row g-3" asp-action="CreateUser" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="col-md-6">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="FullName" class="form-label"></label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
 
-                            <label asp-for="FullName" class="control-label"></label>
-                            <input asp-for="FullName" class="form-control" />
-                            <span asp-validation-for="FullName" class="text-danger"></span>
-                        </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
 
-                        <div class="col-md-6">
-                            <label asp-for="Email" class="control-label"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" type="password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label"></label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
 
 
-
-
-                        <div class="col-md-6">
-                            <label asp-for="PhoneNumber" class="control-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="Password" class="control-label"></label>
-                            <input asp-for="Password" class="form-control" type="password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="ConfirmPassword" class="control-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-
-                         </div>
-                            <div class="col-md-6">
-                                <label asp-for="Roles" class="control-label">Select Role</label>
-                                <select asp-for="Roles" class="form-control">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Roles" class="form-label">Select Role</label>
+                                <select asp-for="Roles" class="form-select">
                                     <option value="">Select Role</option>
                                     <option>Admin</option>
                                     <option>Staff</option>
                                     <option>Student</option>
                                 </select>
-                                <span asp-validation-for="Roles" class="text-danger"></span>
+                                <span asp-validation-for="Roles" class="text-danger small"></span>
                             </div>
 
-
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary btn-block">Create</button>
+                            <div class="col-12 col-md-6">
+                                <label id="idLabel" for="IdentificationNumber" class="form-label"></label>
+                                <input asp-for="IdentificationNumber" class="form-control" />
+                                <span asp-validation-for="IdentificationNumber" class="text-danger small"></span>
                             </div>
-                     </form>
+
+                            <div class="col-12 text-center mt-3">
+                                <button type="submit" class="btn btn-secondary w-100">Create</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center text-muted small">
+                        All fields are required.
+                    </div>
                 </div>
             </div>
-         </div>
-     </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const roleSelect = document.querySelector('[name="Roles"]');
+            const idLabel = document.getElementById("idLabel");
+
+            function updateIdLabel() {
+                const selectedRole = roleSelect.value;
+                if (selectedRole === "Student") {
+                    idLabel.textContent = "Enter Student ID";
+                } else if (selectedRole === "Staff") {
+                    idLabel.textContent = "Enter Staff ID";
+                } else {
+                    idLabel.textContent = "Enter ID";
+                }
+            }
+
+            // Initial label set
+            updateIdLabel();
+
+            // Update label on change
+            roleSelect.addEventListener("change", updateIdLabel);
+        });
+    </script>
+}
+

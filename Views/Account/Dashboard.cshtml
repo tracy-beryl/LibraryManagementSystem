@@ -1,55 +1,275 @@
 ﻿@model LibraryManagementSystem.ViewModels.DashboardViewModel
+@using Newtonsoft.Json
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<div class="container-fluid bg-dark text-white py-5 px-4" style="min-height: 100vh;">
+    <!-- Greeting -->
+    <h3 class="mb-2 fw-bold">Hello, @Model.FirstName</h3>
+    <p class="mb-3">Today is @DateTime.Now.ToString("dddd, MMMM dd, yyyy - hh:mm tt")</p>
 
-<div class="dashboard-content" style="margin-left: 250px; padding-top: 100px;">
-    @if (Model != null)
-    {
-        <div class="container-fluid">
-            <div class="row g-4 px-4">
-                <div class="col-md-4">
-                    <div class="card bg-light shadow">
-                        <div class="card-body text-center">
-                            <div class="stat-label h5">Total Books: @Model.TotalBooks</div>
-                        </div>
-                    </div>
+    <!-- Metric Cards Row 1 -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-3 col-6">
+            <div class="card text-white text-center shadow h-100" style="background: linear-gradient(to right, #43cea2, #185a9d);">
+                <div class="card-body">
+                    <i class="bi bi-people fs-3"></i>
+                    <p>Visitors Today</p>
+                    <h4>@Model.TotalVisitors</h4>
                 </div>
-                <div class="col-md-4">
-                    <div class="card bg-light shadow">
-                        <div class="card-body text-center">
-                            <div class="stat-label h5">Available Books: @Model.AvailableBooks</div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card text-white text-center shadow h-100" style="background: linear-gradient(to right, #4e54c8, #8f94fb);">
+                <div class="card-body">
+                    <i class="bi bi-book-half fs-3"></i>
+                    <p>Total Books</p>
+                    <h4>@Model.TotalBooks</h4>
                 </div>
-                <div class="col-md-4">
-                    <div class="card bg-light shadow">
-                        <div class="card-body text-center">
-                            <div class="stat-label h5">Borrowed Books: @Model.BorrowedBooks</div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card text-white text-center shadow h-100" style="background: linear-gradient(to right, #fc5c7d, #6a82fb);">
+                <div class="card-body">
+                    <i class="bi bi-book-half fs-3"></i>
+                    <p>Borrowed Books</p>
+                    <h4>@Model.BorrowedBooks</h4>
                 </div>
-                <div class="col-md-4">
-                    <div class="card bg-light shadow">
-                        <div class="card-body text-center">
-                            <div class="stat-label h5">Overdue Books: @Model.OverdueBooks</div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card bg-warning text-dark text-center shadow h-100">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-circle fs-3"></i>
+                    <p>Overdue Books</p>
+                    <h4>@Model.OverdueBooks</h4>
                 </div>
-                <div class="col-md-4">
-                    <div class="card bg-light shadow">
-                        <div class="card-body text-center">
-                            <div class="stat-label h5">Past Papers: @Model.PastPapers</div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Metric Cards Row 2 -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3 col-6">
+            <div class="card bg-info text-white text-center shadow h-100">
+                <div class="card-body">
+                    <i class="bi bi-person-plus fs-3"></i>
+                    <p>New Members</p>
+                    <h4>@Model.NewMembers</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card bg-success text-white text-center shadow h-100">
+                <div class="card-body">
+                    <i class="bi bi-journal-check fs-3"></i>
+                    <p>Available Books</p>
+                    <h4>@Model.AvailableBooks</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card text-white text-center shadow h-100" style="background: linear-gradient(to right, #11998e, #38ef7d);">
+                <div class="card-body">
+                    <i class="bi bi-files fs-3"></i>
+                    <p>Past Papers</p>
+                    <h4>@Model.PastPapers</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users and Books Table -->
+    <div class="row g-4 mb-5">
+        <!-- Users -->
+        <div class="col-md-6">
+            <div class="card bg-secondary text-white shadow h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Users</h5>
+                    <a class="btn btn-dark btn-sm" asp-controller="UserManagement" asp-action="Index">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-dark table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Username</th>
+                                <th>FullName</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int count = 1;
+                                foreach (var user in Model.Users.Take(5))
+                                {
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>@user.UserName</td>
+                                        <td>@user.FullName</td>
+                                    </tr>
+                                    count++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-     }
+        <!-- Books -->
+        <div class="col-md-6">
+            <div class="card bg-secondary text-white shadow h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Books</h5>
+                    <a class="btn btn-dark btn-sm" asp-controller="Book" asp-action="Index">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-dark table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int num = 1;
+                                foreach (var book in Model.Books.Take(5))
+                                {
+                                    <tr>
+                                        <td>@num</td>
+                                        <td>@book.Title</td>
+                                        <td>@book.Author</td>
+                                    </tr>
+                                    num++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Top Choices -->
+    <div class="row g-3 mb-5">
+        <h4 class="mb-3">Top Choices</h4>
+        @foreach (var book in Model.TopBooks)
+        {
+            <div class="col-6 col-md-2">
+                <div class="bg-white text-dark p-2 rounded shadow-sm text-center">
+                    <img src="~/images/@book.PhotoPath" alt="@book.Title" loading="lazy" class="img-fluid rounded mb-2" style="height: 160px; object-fit: cover;">
+                    <small>@book.Title</small>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row mt-4">
+        <h4 class="mb-4">Analytics</h4>
+
+        <div class="col-md-4 mb-4">
+            <div class="bg-white p-3 rounded shadow h-100">
+                <h6 class="text-dark text-center">Most Borrowed Books</h6>
+                <canvas id="borrowedChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="bg-white p-3 rounded shadow h-100">
+                <h6 class="text-dark text-center">Available Books by Category</h6>
+                <canvas id="categoryChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="bg-white p-3 rounded shadow h-100">
+                <h6 class="text-dark text-center">Visitors (Last 7 Days)</h6>
+                <canvas id="visitorsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const borrowedChart = new Chart(document.getElementById('borrowedChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(JsonConvert.SerializeObject(Model.TopBooks.Select(b => b.Title))),
+                datasets: [{
+                    label: 'Borrow Count',
+                    data: @Html.Raw(JsonConvert.SerializeObject(Model.TopBooks.Select(b => b.Loans.Count))),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const visitorsChart = new Chart(document.getElementById('visitorsChart'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(JsonConvert.SerializeObject(Model.VisitorStats.Select(v => v.Date.ToString("MMM dd")))),
+                datasets: [{
+                    label: 'Visitors',
+                    data: @Html.Raw(JsonConvert.SerializeObject(Model.VisitorStats.Select(v => v.Count))),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const categoryChart = new Chart(document.getElementById('categoryChart'), {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(JsonConvert.SerializeObject(Model.CategoryChartData.Select(c => c.Category))),
+                datasets: [{
+                    label: 'Available Copies',
+                    data: @Html.Raw(JsonConvert.SerializeObject(Model.CategoryChartData.Select(c => c.AvailableCopies))),
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                        '#9966FF', '#FF9F40', '#8dd3c7', '#fb8072',
+                        '#80b1d3', '#fdb462', '#b3de69'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: 'black'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 }
 

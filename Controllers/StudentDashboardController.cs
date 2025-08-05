@@ -22,17 +22,23 @@ namespace LibraryManagementSystem.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Index()
+
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var firstName = currentUser?.FirstName ?? "User";
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
+            var users = _context.Users.ToList();
             var myBorrowedBooks = _context.Loans.Count(l => l.UserId == user.Id && l.ReturnDate == null);
             var myReturnedBooks = _context.Loans.Count(l => l.UserId == user.Id && l.ReturnDate != null);
 
             var viewModel = new StudentDashboardViewModel
             {
                 MyBorrowedBooks = myBorrowedBooks,
-                MyHistory = myReturnedBooks
+                MyHistory = myReturnedBooks,
+                FirstName= firstName
             };
 
             return View(viewModel);
