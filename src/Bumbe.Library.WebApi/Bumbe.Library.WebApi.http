@@ -1,0 +1,6 @@
+@Bumbe.Library.WebApi_HostAddress = http://localhost:5151
+
+GET {{Bumbe.Library.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

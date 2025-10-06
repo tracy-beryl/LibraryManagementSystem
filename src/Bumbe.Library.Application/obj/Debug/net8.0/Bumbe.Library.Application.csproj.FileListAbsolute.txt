@@ -1,0 +1,16 @@
+/workspace/src/Bumbe.Library.Application/bin/Debug/net8.0/Bumbe.Library.Application.deps.json
+/workspace/src/Bumbe.Library.Application/bin/Debug/net8.0/Bumbe.Library.Application.dll
+/workspace/src/Bumbe.Library.Application/bin/Debug/net8.0/Bumbe.Library.Application.pdb
+/workspace/src/Bumbe.Library.Application/bin/Debug/net8.0/Bumbe.Library.Domain.dll
+/workspace/src/Bumbe.Library.Application/bin/Debug/net8.0/Bumbe.Library.Domain.pdb
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.csproj.AssemblyReference.cache
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.GeneratedMSBuildEditorConfig.editorconfig
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.AssemblyInfoInputs.cache
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.AssemblyInfo.cs
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.csproj.CoreCompileInputs.cache
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.sourcelink.json
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Li.0803C625.Up2Date
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.dll
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/refint/Bumbe.Library.Application.dll
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/Bumbe.Library.Application.pdb
+/workspace/src/Bumbe.Library.Application/obj/Debug/net8.0/ref/Bumbe.Library.Application.dll
