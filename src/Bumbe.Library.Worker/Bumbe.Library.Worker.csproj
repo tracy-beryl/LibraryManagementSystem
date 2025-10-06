@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Bumbe.Library.Worker-a5e158e5-0cfb-414c-a48c-b98be6eb2923</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bumbe.Library.Infrastructure\Bumbe.Library.Infrastructure.csproj" />
+    <ProjectReference Include="..\Bumbe.Library.Application\Bumbe.Library.Application.csproj" />
+  </ItemGroup>
+</Project>

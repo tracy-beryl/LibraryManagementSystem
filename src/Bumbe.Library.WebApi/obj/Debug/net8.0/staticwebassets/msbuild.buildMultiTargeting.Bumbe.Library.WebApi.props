@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Bumbe.Library.WebApi.props" />
+</Project>

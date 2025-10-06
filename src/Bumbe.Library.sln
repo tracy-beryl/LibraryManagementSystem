@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.Domain", "Bumbe.Library.Domain\Bumbe.Library.Domain.csproj", "{5A387608-E7BF-455C-A4CA-236FC84A9B24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.Application", "Bumbe.Library.Application\Bumbe.Library.Application.csproj", "{58B41C48-CF6D-4597-9F00-BB0663801FD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.Infrastructure", "Bumbe.Library.Infrastructure\Bumbe.Library.Infrastructure.csproj", "{36DF2724-F5B8-44E5-A551-B8E443B9C0FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.WebApi", "Bumbe.Library.WebApi\Bumbe.Library.WebApi.csproj", "{53425472-4A14-4E54-85C8-99DD28801D20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.Worker", "Bumbe.Library.Worker\Bumbe.Library.Worker.csproj", "{60B80945-AC16-44B2-A5F1-6926D8079BBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bumbe.Library.WebApp", "Bumbe.Library.WebApp\Bumbe.Library.WebApp.csproj", "{3A93F9FD-DC6E-4023-ADDA-4727D5E71CBD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A387608-E7BF-455C-A4CA-236FC84A9B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A387608-E7BF-455C-A4CA-236FC84A9B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A387608-E7BF-455C-A4CA-236FC84A9B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A387608-E7BF-455C-A4CA-236FC84A9B24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58B41C48-CF6D-4597-9F00-BB0663801FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58B41C48-CF6D-4597-9F00-BB0663801FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58B41C48-CF6D-4597-9F00-BB0663801FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58B41C48-CF6D-4597-9F00-BB0663801FD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36DF2724-F5B8-44E5-A551-B8E443B9C0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36DF2724-F5B8-44E5-A551-B8E443B9C0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36DF2724-F5B8-44E5-A551-B8E443B9C0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36DF2724-F5B8-44E5-A551-B8E443B9C0FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53425472-4A14-4E54-85C8-99DD28801D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53425472-4A14-4E54-85C8-99DD28801D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53425472-4A14-4E54-85C8-99DD28801D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53425472-4A14-4E54-85C8-99DD28801D20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60B80945-AC16-44B2-A5F1-6926D8079BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B80945-AC16-44B2-A5F1-6926D8079BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B80945-AC16-44B2-A5F1-6926D8079BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B80945-AC16-44B2-A5F1-6926D8079BBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A93F9FD-DC6E-4023-ADDA-4727D5E71CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A93F9FD-DC6E-4023-ADDA-4727D5E71CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A93F9FD-DC6E-4023-ADDA-4727D5E71CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A93F9FD-DC6E-4023-ADDA-4727D5E71CBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
