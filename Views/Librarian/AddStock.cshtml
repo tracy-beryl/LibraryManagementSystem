@@ -1,0 +1,59 @@
+﻿@model LibraryManagementSystem.ViewModels.AddStockViewModel
+@using LibraryManagementSystem.Models
+
+@{
+    ViewData["Title"] = "Add Stock";
+    var books = ViewBag.Books as List<Book>;
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Add Stock</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="AddStock" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="BookId" class="form-label">Book</label>
+                    <select asp-for="BookId" class="form-select">
+                        <option value="">Select Book</option>
+                        @if (books != null)
+                        {
+                            foreach (var book in books)
+                            {
+                                <option value="@book.Id">@book.Title</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="BookId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="QuantityAdded" class="form-label"></label>
+                    <input asp-for="QuantityAdded" class="form-control" />
+                    <span asp-validation-for="QuantityAdded" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Notes" class="form-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Optional notes about the stock addition"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark">Add Stock</button>
+                    <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

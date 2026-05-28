@@ -64,7 +64,16 @@
     <!-- FIXED NAVBAR -->
     <nav class="custom_navbar navbar navbar-expand-lg navbar-dark fixed-top shadow">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" asp-controller="home" asp-action="index">📚 Beta Library</a>
+            <a asp-controller="Home" asp-action="Index"
+               class="navbar-brand d-flex align-items-center">
+
+                <img src="~/images/logo.png"
+                     alt="Logo"
+                     style="height:35px;"
+                     class="me-2" />
+
+                Bumbe Library
+            </a>
 
             <!-- Navbar toggler for small screens -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
@@ -105,7 +114,7 @@
             <div class="carousel-item active">
                 <img src="~/images/background.jpg" class="d-block w-100" style="height: 80vh; object-fit: cover;" />
                 <div class="carousel-caption d-none d-md-block">
-                    <h1 class="text-white">Welcome to Beta Library</h1>
+                    <h1 class="text-white">Welcome to Bumbe Library</h1>
                     <p class="lead text-white">Access thousands of books instantly</p>
                 </div>
             </div>

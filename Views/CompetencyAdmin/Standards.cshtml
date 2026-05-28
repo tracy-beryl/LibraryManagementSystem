@@ -1,0 +1,53 @@
+﻿
+@model IEnumerable<LibraryManagementSystem.Models.CDACC.CompetencyStandard>
+
+<h2>Competency Standards</h2>
+
+<p>
+    <a asp-action="CreateStandard" class="btn btn-primary">
+        Create New Standard
+    </a>
+</p>
+
+<div class="table-responsive">
+    <table id="example" class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+
+            <tr>
+                <th>Program</th>
+                <th>Level</th>
+                <th>Semester</th>
+                <th>Unit Code</th>
+                <th>Unit Name</th>
+                <th>Version</th>
+                <th>Active</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Program</td>
+                    <td>@s.Level</td>
+                    <td>@s.Semester</td>
+                    <td>@s.UnitCode</td>
+                    <td>@s.UnitName</td>
+                    <td>@s.VersionNumber</td>
+                    <td>@s.IsActive</td>
+                    <td>
+                        <a asp-action="NewVersion" asp-route-id="@s.Id">
+                            New Version
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+        new DataTable('#example')
+    </script>
+}

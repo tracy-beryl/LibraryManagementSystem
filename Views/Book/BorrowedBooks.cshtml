@@ -32,35 +32,41 @@
                 {
                     @foreach (var loan in Model.Loans)
                     {
-                        <tr>
-                            <td>@count</td>
-                            <td>@loan.Book.Title</td>
-                            <td>@loan.User.FullName</td>
-                            <td>@loan.LoanDate.ToShortDateString()</td>
-                            <td>
-                                @if (loan.ReturnDate == null)
-                                {
-                                    <span class="text-danger">Not Returned</span>
-                                }
-                                else
-                                {
-                                    <span class="text-success">Returned on @loan.ReturnDate.Value.ToShortDateString()</span>
-                                }
-                            </td>
-                            <td>@loan.DueDate.ToShortDateString()</td>
-                            <td>
-                                <button type="button"
-                                        class="btn btn-dark return-book-btn"
-                                        data-loanid="@loan.Id"
-                                        data-studentid="@loan.User.Id">
-                                    Return Book
-                                </button>
+                <tr>
+                    <td>@count</td>
+                    <td>@loan.Book.Title</td>
+                    <td>@loan.User.FullName</td>
+                    <td>@loan.LoanDate.ToShortDateString()</td>
+                    <td>
+                        @if (loan.ReturnDate == null)
+                        {
+                            <span class="text-danger">Not Returned</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">Returned on @loan.ReturnDate.Value.ToShortDateString()</span>
+                        }
+                    </td>
+                    <td>@loan.DueDate.ToShortDateString()</td>
+                    <td>
+                        @if (loan.ReturnDate == null)
+                        {
+                            <button type="button"
+                                    class="btn btn-dark return-book-btn"
+                                    data-loanid="@loan.Id"
+                                    data-studentid="@loan.User.Id">
+                                Return Book
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Returned</span>
+                        }
+                    </td>
 
 
-                            </td>
 
-
-                        </tr>
+                </tr>
                         count++;
                     }
 

@@ -32,6 +32,7 @@ namespace LibraryManagementSystem.Controllers
             return View();
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> Upload(SoftCopyViewModel model)
         {
@@ -55,7 +56,7 @@ namespace LibraryManagementSystem.Controllers
                 {
                     Title = model.Title,
                     Description = model.Description,
-                    FilePath = "/softcopies/" + uniqueFileName,
+                    FilePath = "/softcopy/" + uniqueFileName,
                     UploadedBy = User.Identity.Name
                 };
 

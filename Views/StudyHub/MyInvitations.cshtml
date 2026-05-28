@@ -1,0 +1,80 @@
+﻿@model List<ProjectInvitation>
+
+<h3>My Invitations</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No pending invitations.
+    </div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Owner</th>
+                <th>Sent</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var invite in Model)
+            {
+                <tr>
+                    <td>@invite.Project.ProjectName</td>
+                    <td>@invite.Project.Owner.FullName</td>
+                    <td>@invite.SentAt.ToShortDateString()</td>
+
+                    <td>
+                        <form asp-action="AcceptInvitation"
+                              asp-controller="StudyHub"
+                              method="post"
+                              class="d-inline">
+                            <input type="hidden" name="id" value="@invite.Id" />
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Accept
+                            </button>
+                        </form>
+
+                        <form asp-action="RejectInvitation"
+                              asp-controller="StudyHub"
+                              method="post"
+                              class="d-inline">
+                            <input type="hidden" name="id" value="@invite.Id" />
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Reject
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/collaborationHub")
+            .build();
+
+        connection.on("InvitationReceived", function () {
+            location.reload();   // reload page when new invite arrives
+        });
+
+        connection.on("InvitationUpdated", function () {
+            location.reload();   // reload when invite accepted/rejected
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+
+}

@@ -1,0 +1,90 @@
+﻿@model LibraryManagementSystem.ViewModels.PastPaperAttemptHistoryViewModel
+@{
+    ViewData["Title"] = "Past Paper History";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">Past Paper History</h2>
+            <p class="text-muted mb-0">Review your past paper attempts and reflections.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-light">
+            Back to Learning Path
+        </a>
+    </div>
+
+    @if (!Model.Attempts.Any())
+    {
+        <div class="alert alert-secondary">
+            You have not attempted any past papers yet.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var attempt in Model.Attempts)
+            {
+                <div class="col-md-6">
+                    <div class="card bg-dark border-secondary shadow-sm h-100">
+                        <div class="card-header border-secondary">
+                            <h5 class="text-primary mb-0">@attempt.Title</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="text-light mb-2">
+                                <strong>Attempted On:</strong>
+                                @attempt.AttemptedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                            </p>
+
+                            <p class="text-light mb-2">
+                                <strong>Difficulty:</strong>
+                                @GetRatingLabel(attempt.DifficultyRating)
+                            </p>
+
+                            <p class="text-light mb-2">
+                                <strong>Confidence:</strong>
+                                @GetRatingLabel(attempt.ConfidenceRating)
+                            </p>
+
+                            <p class="text-light mb-2">
+                                <strong>Hard Questions:</strong>
+                                @(string.IsNullOrWhiteSpace(attempt.ChallengingQuestions)
+                                    ? "Not specified"
+                                    : attempt.ChallengingQuestions)
+                            </p>
+
+                            <p class="text-light mb-0">
+                                <strong>Notes:</strong>
+                                @(string.IsNullOrWhiteSpace(attempt.FeedbackNotes)
+                                    ? "No notes provided"
+                                    : attempt.FeedbackNotes)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@functions {
+    string GetRatingLabel(int rating)
+    {
+        switch (rating)
+        {
+            case 1:
+                return "1 - Very Low / Very Easy";
+            case 2:
+                return "2 - Low / Easy";
+            case 3:
+                return "3 - Moderate";
+            case 4:
+                return "4 - High / Hard";
+            case 5:
+                return "5 - Very High / Very Hard";
+            default:
+                return "Not rated";
+        }
+    }
+}

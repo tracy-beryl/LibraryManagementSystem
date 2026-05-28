@@ -1,21 +1,67 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿@model LibraryManagementSystem.ViewModels.ReportPageViewModel
 
-
-
-@model IEnumerable<LibraryManagementSystem.Models.Book>
 @{
-    ViewData["Title"] = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.ReportTitle;
+
+    bool isLoanReport = Model.Filter == "NotReturned" ||
+                        Model.Filter == "Overdue" ||
+                        Model.Filter == "ReturnedBooks";
+
+    bool isFineReport = Model.Filter == "UnpaidFines" ||
+                        Model.Filter == "PartiallyPaidFines" ||
+                        Model.Filter == "FullyPaidFines" ||
+                        Model.Filter == "PendingMpesa";
+
+    bool isStockReport = Model.Filter == "AvailableCopies" ||
+                         Model.Filter == "OutOfStock" ||
+                         Model.Filter == "LowStock" ||
+                         Model.Filter == "NeverBorrowed" ||
+                         Model.Filter == "MostBorrowed" ||
+                         string.IsNullOrEmpty(Model.Filter);
 }
 
 <div class="container-fluid px-3 mt-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-        <h2 class="mb-0"> Library Book Reports</h2>
+        <h2 class="mb-0">@Model.ReportTitle</h2>
         <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
     </div>
 
-     @*Filter Modal*@ 
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Books</h6>
+                    <h3>@Model.TotalBooks</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Rows in Report</h6>
+                    <h3>@Model.TotalRows</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Overdue Loans</h6>
+                    <h3>@Model.OverdueCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Outstanding Fines</h6>
+                    <h3>KES @Model.TotalOutstandingFines.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -23,19 +69,39 @@
                     <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <form method="get" asp-action="Index" asp-controller="Report">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="filter" class="form-label">Select Report</label>
                             <select class="form-select" name="filter" id="filter">
-                                <option value="">Select Filter</option>
-                                <option value="NotReturned">Not Returned</option>
-                                <option value="Overdue">Overdue</option>
-                                <option value="MostBorrowed">Most Borrowed</option>
-                                <option value="AvailableCopies">Available Copies</option>
+                                <option value="" selected="@(string.IsNullOrEmpty(Model.Filter))">All Reports</option>
+                                <option value="NotReturned" selected="@(Model.Filter == "NotReturned")">Not Returned</option>
+                                <option value="Overdue" selected="@(Model.Filter == "Overdue")">Overdue</option>
+                                <option value="MostBorrowed" selected="@(Model.Filter == "MostBorrowed")">Most Borrowed</option>
+                                <option value="AvailableCopies" selected="@(Model.Filter == "AvailableCopies")">Available Copies</option>
+                                <option value="OutOfStock" selected="@(Model.Filter == "OutOfStock")">Out of Stock</option>
+                                <option value="NeverBorrowed" selected="@(Model.Filter == "NeverBorrowed")">Never Borrowed</option>
+                                <option value="LowStock" selected="@(Model.Filter == "LowStock")">Low Stock</option>
+                                <option value="ReturnedBooks" selected="@(Model.Filter == "ReturnedBooks")">Returned Books</option>
+                                <option value="UnpaidFines" selected="@(Model.Filter == "UnpaidFines")">Unpaid Fines</option>
+                                <option value="PartiallyPaidFines" selected="@(Model.Filter == "PartiallyPaidFines")">Partially Paid Fines</option>
+                                <option value="FullyPaidFines" selected="@(Model.Filter == "FullyPaidFines")">Fully Paid Fines</option>
+                                <option value="PendingMpesa" selected="@(Model.Filter == "PendingMpesa")">Pending M-Pesa</option>
                             </select>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" name="startDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" name="endDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-dark w-100">Apply Filter</button>
                     </div>
@@ -44,7 +110,6 @@
         </div>
     </div>
 
-     @*Responsive Table*@ 
     <div class="table-responsive">
         <table id="reportTable" class="table table-bordered table-hover align-middle">
             <thead class="table-dark">
@@ -52,24 +117,83 @@
                     <th>No</th>
                     <th>Title</th>
                     <th>Author</th>
-                    <th>Total Copies</th>
-                    <th>Available Copies</th>
-                    <th>Times Borrowed</th>
+
+                    @if (isStockReport)
+                    {
+                        <th>Category</th>
+                        <th>Reference No</th>
+                        <th>Total Copies</th>
+                        <th>Available Copies</th>
+                        <th>Times Borrowed</th>
+                    }
+
+                    @if (isLoanReport)
+                    {
+                        <th>Borrower</th>
+                        <th>Loan Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                    }
+
+                    @if (isFineReport)
+                    {
+                        <th>Borrower</th>
+                        <th>Loan Date</th>
+                        <th>Due Date</th>
+                        <th>Fine</th>
+                        <th>Paid</th>
+                        <th>Balance</th>
+                        <th>Fine Status</th>
+                        <th>M-Pesa Pending</th>
+                    }
                 </tr>
             </thead>
             <tbody>
-                @{ 
+                @{
                     int count = 1;
                 }
-                @foreach (var book in Model)
+
+                @foreach (var row in Model.Rows)
                 {
-                    <tr>
+                    <tr class="@(row.OutstandingFine > 0 ? "table-warning" : "")">
                         <td>@count</td>
-                        <td>@book.Title</td>
-                        <td>@book.Author</td>
-                        <td>@book.TotalCopies</td>
-                        <td>@book.AvailableCopies</td>
-                        <td>@(book.Loans?.Count() ?? 0)</td>
+                        <td>@row.Title</td>
+                        <td>@row.Author</td>
+
+                        @if (isStockReport)
+                        {
+                            <td>@row.Category</td>
+                            <td>@row.ReferenceNumber</td>
+                            <td>@row.TotalCopies</td>
+                            <td class="@(row.AvailableCopies == 0 ? "text-danger fw-bold" : row.AvailableCopies <= 2 ? "text-warning fw-bold" : "")">
+                                @row.AvailableCopies
+                            </td>
+                            <td>@row.TimesBorrowed</td>
+                        }
+
+                        @if (isLoanReport)
+                        {
+                            <td>@row.BorrowerName</td>
+                            <td>@(row.LoanDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@(row.DueDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@(row.ReturnDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@row.Status</td>
+                        }
+
+                        @if (isFineReport)
+                        {
+                            <td>@row.BorrowerName</td>
+                            <td>@(row.LoanDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@(row.DueDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>KES @(row.FrozenFineAmount?.ToString("N2") ?? "0.00")</td>
+                            <td>KES @row.FineAmountPaid.ToString("N2")</td>
+                            <td class="@(row.OutstandingFine > 0 ? "text-danger fw-bold" : "text-success fw-bold")">
+                                KES @row.OutstandingFine.ToString("N2")
+                            </td>
+                            <td>@row.FinePaymentStatus</td>
+                            <td>@(row.MpesaPaymentPending ? "Yes" : "No")</td>
+                        }
                     </tr>
                     count++;
                 }
@@ -78,21 +202,18 @@
     </div>
 </div>
 
- @*Initialize DataTables*@ 
 <script>
-    
     new DataTable('#reportTable', {
         layout: {
             topStart: {
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                buttons: [
+                    'copy',
+                    'csv',
+                    'excel',
+                    'pdf',
+                    'print'
+                ]
             }
         }
     });
 </script>
-
-
-
-
-
-
-

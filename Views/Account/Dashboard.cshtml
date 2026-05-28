@@ -161,7 +161,19 @@
         {
             <div class="col-6 col-md-2">
                 <div class="bg-white text-dark p-2 rounded shadow-sm text-center">
-                    <img src="~/images/@book.PhotoPath" alt="@book.Title" loading="lazy" class="img-fluid rounded mb-2" style="height: 160px; object-fit: cover;">
+                    @{
+                        var imagePath = string.IsNullOrWhiteSpace(book.PhotoPath)
+                            ? "/images/alt-image.jpg"
+                            : (book.PhotoPath.StartsWith("/images/")
+                                ? book.PhotoPath
+                                : "/images/" + book.PhotoPath);
+                    }
+
+                    <img src="@imagePath"
+                         alt="@book.Title"
+                         class="rounded me-3"
+                         style="width:60px;height:80px;object-fit:cover;"
+                         onerror="this.onerror=null;this.src='/images/alt-image.jpg';" />
                     <small>@book.Title</small>
                 </div>
             </div>

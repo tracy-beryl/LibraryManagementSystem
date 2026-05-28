@@ -1,0 +1,96 @@
+﻿@model LibraryManagementSystem.ViewModels.AttemptPastPaperViewModel
+@{
+    ViewData["Title"] = "Attempt Past Paper";
+}
+
+<div class="container py-4">
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary">
+            <h4 class="text-white mb-0">@Model.Title</h4>
+        </div>
+
+        <div class="card-body">
+            <p class="text-light">
+                Review the past paper below, then submit your feedback about the difficulty and the questions you found challenging.
+            </p>
+
+            <div class="mb-4">
+                <iframe src="@Model.FilePath"
+                        width="100%"
+                        height="600px"
+                        style="border:1px solid #444;">
+                </iframe>
+            </div>
+
+            <form asp-action="SubmitPastPaperAttempt" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ResourceId" />
+                <input type="hidden" asp-for="Title" />
+                <input type="hidden" asp-for="FilePath" />
+
+                <div class="mb-3">
+                    <label asp-for="DifficultyRating" class="form-label text-light">
+                        Overall difficulty
+                    </label>
+                    <select asp-for="DifficultyRating" class="form-select">
+                        <option value="">-- Select difficulty --</option>
+                        <option value="1">1 - Very Easy</option>
+                        <option value="2">2 - Easy</option>
+                        <option value="3">3 - Moderate</option>
+                        <option value="4">4 - Hard</option>
+                        <option value="5">5 - Very Hard</option>
+                    </select>
+                    <span asp-validation-for="DifficultyRating" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfidenceRating" class="form-label text-light">
+                        Confidence in your answers
+                    </label>
+                    <select asp-for="ConfidenceRating" class="form-select">
+                        <option value="">-- Select confidence --</option>
+                        <option value="1">1 - Very Low</option>
+                        <option value="2">2 - Low</option>
+                        <option value="3">3 - Moderate</option>
+                        <option value="4">4 - High</option>
+                        <option value="5">5 - Very High</option>
+                    </select>
+                    <span asp-validation-for="ConfidenceRating" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ChallengingQuestions" class="form-label text-light">
+                        Which questions were hardest?
+                    </label>
+                    <input asp-for="ChallengingQuestions"
+                           class="form-control"
+                           placeholder="Example: Q2, Q4, Q7" />
+                    <span asp-validation-for="ChallengingQuestions" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FeedbackNotes" class="form-label text-light">
+                        Additional feedback
+                    </label>
+                    <textarea asp-for="FeedbackNotes"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Example: I struggled with normalization and database security questions."></textarea>
+                    <span asp-validation-for="FeedbackNotes" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Submit Attempt Feedback
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary ms-2">
+                    Back
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

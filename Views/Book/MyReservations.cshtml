@@ -1,0 +1,50 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.BookReservation>
+
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<h3 class="mb-4">My Book Reservations</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You have no reservations.
+    </div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Book</th>
+                <th>Reserved On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Book.Title</td>
+                    <td>@r.ReservedOn.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @if (r.IsFulfilled)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else if (r.IsNotified)
+                        {
+                            <span class="badge bg-warning text-dark">Notified</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Pending</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

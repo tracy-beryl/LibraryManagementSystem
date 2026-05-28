@@ -5,242 +5,319 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Controllers
 {
-
+    [Authorize(Roles = "Admin,Librarian")]
     public class UserManagementController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly LibraryDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly LibraryDbContext _context;
 
-        public UserManagementController(UserManager<ApplicationUser> userManager, LibraryDbContext context, RoleManager<IdentityRole> roleManager)
+        public UserManagementController(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            LibraryDbContext context)
         {
-
             _userManager = userManager;
-            _context = context;
             _roleManager = roleManager;
+            _context = context;
         }
 
+        // INDEX
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = _userManager.Users
-                .Where(u => u.IsActive) // Only active users
-                .Select(u => new UserListViewModel
-                {
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    PhoneNumber = u.PhoneNumber,
-                    Role = _context.Roles
-                            .Where(r => r.Id == u.RoleId && r.IsActive) // Only active roles
-                            .Select(r => r.RoleName)
-                            .FirstOrDefault()
-                }).ToList();
+            var users = await _userManager.Users
+                .Where(u => u.IsActive)
+                .ToListAsync();
 
-            var roles = _context.Roles
-                .Where(r => r.IsActive) // Only active roles
+            var userViewModels = users.Select(async u => new UserListViewModel
+            {
+                FullName = u.FullName,
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
+                Role = (await _userManager.GetRolesAsync(u)).FirstOrDefault()
+            }).Select(t => t.Result).ToList();
+
+            var roles = await _roleManager.Roles
                 .Select(r => new CreateRoleViewModel
                 {
-                    RoleName = r.RoleName
-                }).ToList();
+                    RoleName = r.Name
+                }).ToListAsync();
 
             var viewModel = new UserAndRoleViewModel
             {
-                Users = users,
+                Users = userViewModels,
                 Roles = roles
             };
 
             return View(viewModel);
         }
 
-
-
-
+       
+        // CREATE USER
 
         [HttpGet]
         public IActionResult CreateUser()
         {
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (!await _roleManager.RoleExistsAsync(model.Roles))
             {
-                
-                var selectedRole = _context.Roles.FirstOrDefault(r => r.RoleName == model.Roles);
+                ModelState.AddModelError("", "Selected role does not exist.");
+                return View(model);
+            }
 
-                if (selectedRole == null)
-                {
-                    ModelState.AddModelError("", "Selected role does not exist.");
-                    return View(model);
-                }
+            if (model.Roles == "Student" && string.IsNullOrWhiteSpace(model.AdmissionNumber))
+            {
+                ModelState.AddModelError("AdmissionNumber", "Admission number is required for students.");
+                return View(model);
+            }
 
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    FullName = model.FullName,
-                    PhoneNumber = model.PhoneNumber,
-                    RoleId = selectedRole.Id,
-                    IdentificationNumber= model.IdentificationNumber
-                };
+            if ((model.Roles == "Librarian" || model.Roles == "Lecturer") && string.IsNullOrWhiteSpace(model.StaffNumber))
+            {
+                ModelState.AddModelError("StaffNumber", "Staff number is required.");
+                return View(model);
+            }
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+            if ((model.Roles == "Librarian" || model.Roles == "Lecturer") && string.IsNullOrWhiteSpace(model.Department))
+            {
+                ModelState.AddModelError("Department", "Department is required.");
+                return View(model);
+            }
 
-                if (result.Succeeded)
-                {
-                    
-                    //await _userManager.AddToRoleAsync(user, selectedRole.RoleName);
+            if (string.IsNullOrWhiteSpace(model.FullName) ||
+    model.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+            {
+                ModelState.AddModelError("FullName", "Please enter at least two names.");
+                return View(model);
+            }
 
-                    return RedirectToAction("Index");
-                }
+            var names = model.FullName
+             .Trim()
+             .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
+            var firstName = names.FirstOrDefault();
+            var lastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : "";
+
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName.Trim(),
+                FirstName = firstName,
+                LastName = lastName,
+                PhoneNumber = model.PhoneNumber,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
                 foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                    ModelState.AddModelError("", error.Description);
+                return View(model);
             }
 
-            return View(model);
-        }
+            await _userManager.AddToRoleAsync(user, model.Roles);
 
-        [HttpGet]
-        public IActionResult EditUser()
-        {
-
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditUser(UserListViewModel model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null) return NotFound();
-
-            user.FullName = model.FullName;
-            user.PhoneNumber = model.PhoneNumber;
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == model.Role);
-            if (role != null)
+            if (model.Roles == "Student")
             {
-                user.RoleId = role.Id;
-            }
-
-
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-                return RedirectToAction("Index");
-
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("", error.Description);
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult DeactivateUser()
-        {
-
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeactivateUser(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
-            {
-                user.IsActive = false;
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                    return RedirectToAction("Index");
-            }
-
-            return NotFound();
-        }
-
-
-        [HttpGet]
-        public IActionResult CreateRole()
-        {
-
-            return View();
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var existingRole = await _context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleName == model.RoleName);
-
-                if (existingRole != null)
+                var studentProfile = new StudentProfile
                 {
-                    ModelState.AddModelError("", "Role already exists.");
-                    return View(model);
-                }
-
-                var role = new Roles
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    RoleName = model.RoleName
+                    UserId = user.Id,
+                    AdmissionNumber = model.AdmissionNumber.Trim()
                 };
-
-                _context.Roles.Add(role);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index");
+                _context.StudentProfiles.Add(studentProfile);
+            }
+            else if (model.Roles == "Librarian" || model.Roles == "Lecturer")
+            {
+                var staffProfile = new StaffProfile
+                {
+                    UserId = user.Id,
+                    StaffNumber = model.StaffNumber.Trim(),
+                    Department = model.Department.Trim()
+                };
+                _context.StaffProfiles.Add(staffProfile);
             }
 
-            return View(model);
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> EditRole(string OldRoleName, string NewRoleName)
-        {
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == OldRoleName);
-            if (role == null)
-                return NotFound();
-
-            role.RoleName = NewRoleName;
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
 
 
+        // EDIT USER
+
         [HttpPost]
-        public async Task<IActionResult> DeactivateRole(string roleName)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUser(UserListViewModel model)
         {
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
-            if (role != null)
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index");
+
+            var user = await _userManager.Users
+                .Include(u => u.StudentProfile)
+                .Include(u => u.StaffProfile)
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
+
+            if (user == null)
+                return NotFound();
+
+            // Validate full name has at least two names
+            if (string.IsNullOrWhiteSpace(model.FullName) ||
+                model.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
             {
-                role.IsActive = false;
-                await _context.SaveChangesAsync();
+                TempData["Error"] = "Please enter at least two names.";
                 return RedirectToAction("Index");
             }
+
+            if (string.IsNullOrWhiteSpace(model.Role))
+            {
+                TempData["Error"] = "Role is required.";
+                return RedirectToAction("Index");
+            }
+
+            if (!await _roleManager.RoleExistsAsync(model.Role))
+            {
+                TempData["Error"] = "Selected role does not exist.";
+                return RedirectToAction("Index");
+            }
+
+            user.FullName = model.FullName.Trim();
+            user.PhoneNumber = model.PhoneNumber;
+
+            // Split full name into first and last name
+            var names = user.FullName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            user.FirstName = names.FirstOrDefault();
+            user.LastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : "";
+
+            // Update roles
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            await _userManager.AddToRoleAsync(user, model.Role);
+
+            // Save changes
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                TempData["Error"] = string.Join(" ", result.Errors.Select(e => e.Description));
+                return RedirectToAction("Index");
+            }
+
+            TempData["Success"] = "User updated successfully.";
+            return RedirectToAction("Index");
+        }
+
+
+        // DEACTIVATE USER
+
+        [HttpPost]
+        public async Task<IActionResult> DeactivateUser(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return NotFound();
+
+            user.IsActive = false;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+                return RedirectToAction("Index");
 
             return NotFound();
         }
 
+        
+        // CREATE ROLE
+        
+        [HttpGet]
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
 
+            if (await _roleManager.RoleExistsAsync(model.RoleName))
+            {
+                ModelState.AddModelError("", "Role already exists.");
+                return View(model);
+            }
+
+            var result = await _roleManager.CreateAsync(
+                new IdentityRole(model.RoleName));
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                return View(model);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        
+        // EDIT ROLE
+
+        [HttpPost]
+        public async Task<IActionResult> EditRole(string oldRoleName, string newRoleName)
+        {
+            var role = await _roleManager.FindByNameAsync(oldRoleName);
+            if (role == null)
+                return NotFound();
+
+            role.Name = newRoleName;
+            role.NormalizedName = newRoleName.ToUpper();
+
+            var result = await _roleManager.UpdateAsync(role);
+
+            if (!result.Succeeded)
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+       
+        // DELETE ROLE
+        
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null)
+                return NotFound();
+
+            var result = await _roleManager.DeleteAsync(role);
+
+            if (!result.Succeeded)
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
     }
 }
-
-
-
-
-
-
-
-
-         

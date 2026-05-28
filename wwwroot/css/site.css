@@ -103,6 +103,59 @@ table img {
 
 
 
+.student-dark-dashboard {
+    background-color: #121212;
+    color: #f5f5f5;
+}
 
-  
+    .student-dark-dashboard .card {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+    }
 
+    .student-dark-dashboard .card-header {
+        background-color: #1e1e2f;
+        color: #ffffff;
+        border-color: #3a3a4f !important;
+    }
+
+    .student-dark-dashboard .card-body {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+    }
+
+    .student-dark-dashboard .text-muted {
+        color: #b8bcc2 !important;
+    }
+
+    .student-dark-dashboard .list-group-item {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+        border-color: #3a3a4f;
+    }
+
+    .student-dark-dashboard .table {
+        color: #f5f5f5;
+    }
+
+        .student-dark-dashboard .table th,
+        .student-dark-dashboard .table td {
+            color: #f5f5f5;
+            border-color: #3a3a4f !important;
+            background-color: transparent;
+        }
+
+        .student-dark-dashboard .table thead th {
+            background-color: #2b2b3d;
+            color: #ffffff;
+        }
+
+    .student-dark-dashboard .border,
+    .student-dark-dashboard .border-bottom,
+    .student-dark-dashboard .border-secondary {
+        border-color: #3a3a4f !important;
+    }
+
+    .student-dark-dashboard .progress {
+        background-color: #343a40;
+    }

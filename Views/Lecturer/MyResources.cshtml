@@ -1,0 +1,206 @@
+﻿@model LibraryManagementSystem.ViewModels.LecturerMyResourcesViewModel
+
+@{
+    ViewData["Title"] = "My Resources";
+}
+
+<div class="container-fluid py-4 bg-dark min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">My Resources</h2>
+            <p class="text-light mb-0">Resources linked to your assigned units</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Lecturer" asp-action="AddResource" class="btn btn-outline-success">
+                Add Resource
+            </a>
+            <a asp-controller="Lecturer" asp-action="Dashboard" class="btn btn-outline-light">
+                Back to Dashboard
+            </a>
+
+          
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card bg-dark border-secondary shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="MyResources" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label text-light">Search</label>
+                    <input type="text"
+                           name="searchTerm"
+                           value="@Model.SearchTerm"
+                           class="form-control"
+                           placeholder="Search by title or ref no." />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-light">Unit</label>
+                    <select name="unitCode" class="form-select">
+                        <option value="">All Units</option>
+                        @foreach (var unit in Model.UnitCodes)
+                        {
+                            <option value="@unit" selected="@(Model.UnitCode == unit)">@unit</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label text-light">Type</label>
+                    <select name="resourceType" class="form-select">
+                        <option value="">All Types</option>
+                        @foreach (var type in Model.ResourceTypes)
+                        {
+                            <option value="@type" selected="@(Model.ResourceType == type)">@type</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label text-light">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All</option>
+                        <option value="Active" selected="@(Model.Status == "Active")">Active</option>
+                        <option value="Inactive" selected="@(Model.Status == "Inactive")">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="form-check text-light">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="myUploadsOnly"
+                               value="true"
+                               id="myUploadsOnly"
+                               @(Model.MyUploadsOnly ? "checked" : "") />
+                        <label class="form-check-label" for="myUploadsOnly">
+                            My uploads only
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-info w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Assigned Unit Resources</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.Resources.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Ref No.</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Unit</th>
+                                <th>Program</th>
+                                <th>Level</th>
+                                <th>Semester</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Resources)
+                            {
+                                <tr>
+                                    <td>@item.ReferenceNumber</td>
+                                    <td>@item.Title</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@item.ResourceType</span>
+                                    </td>
+                                    <td>@item.UnitCode - @item.UnitName</td>
+                                    <td>@item.Program</td>
+                                    <td>@item.Level</td>
+                                    <td>@item.Semester</td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            @if (item.IsActive)
+                                            {
+                                                <a asp-controller="Lecturer"
+                                                   asp-action="OpenResource"
+                                                   asp-route-resourceId="@item.ResourceId"
+                                                   asp-route-competencyStandardId="@item.CompetencyStandardId"
+                                                   class="btn btn-sm btn-outline-info"
+                                                   target="_blank">
+                                                    Open
+                                                </a>
+                                            }
+
+                                            <a asp-controller="Lecturer"
+                                               asp-action="EditResource"
+                                               asp-route-resourceId="@item.ResourceId"
+                                               asp-route-competencyStandardId="@item.CompetencyStandardId"
+                                               class="btn btn-sm btn-outline-warning">
+                                                Edit
+                                            </a>
+
+                                            @if (item.IsActive)
+                                            {
+                                                <form asp-action="DeactivateResource" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="resourceId" value="@item.ResourceId" />
+                                                    <input type="hidden" name="competencyStandardId" value="@item.CompetencyStandardId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        Deactivate
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                        <form asp-action="ReactivateResource" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="resourceId" value="@item.ResourceId" />
+                                            <input type="hidden" name="competencyStandardId" value="@item.CompetencyStandardId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                Reactivate
+                                            </button>
+
+                                            @if (item.CreatedByUserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                                            {
+                                                <span class="badge bg-info">My Upload</span>
+                                            }
+                                        </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No resources found for the selected filters.
+                </div>
+            }
+        </div>
+    </div>
+</div>

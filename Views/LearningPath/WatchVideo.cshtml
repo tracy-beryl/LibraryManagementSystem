@@ -1,0 +1,84 @@
+﻿@model LibraryManagementSystem.ViewModels.WatchVideoViewModel
+
+@{
+    ViewData["Title"] = "Watch Video";
+}
+
+<div class="container mt-4">
+    <h4>@Model.Title</h4>
+    <div id="player"></div>
+    <div id="status" class="mt-3 text-muted">Initializing...</div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+    let player;
+    let lastSentSeconds = 0;
+    let interval;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '390',
+            width: '640',
+            videoId: "@Model.VideoId",
+            events: {
+                onStateChange: onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+            startTracking();
+        }
+
+        if (event.data === YT.PlayerState.PAUSED ||
+            event.data === YT.PlayerState.ENDED) {
+            stopTracking();
+        }
+    }
+
+    function startTracking() {
+        if (interval) return;
+
+        interval = setInterval(async function () {
+
+            if (!player) return;
+
+            const duration = player.getDuration();
+            const current = player.getCurrentTime();
+
+            if (duration <= 0) return;
+
+            const percent = (current / duration) * 100;
+
+            document.getElementById("status").innerText =
+                "Watched: " + percent.toFixed(0) + "%";
+
+            if (current > lastSentSeconds) {
+
+                lastSentSeconds = current;
+
+                await fetch('/LearningPath/UpdateVideoProgress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        resourceId: @Model.ResourceId,
+                        watchedSeconds: current
+                    })
+                });
+            }
+
+        }, 5000); // every 5 seconds
+    }
+
+    function stopTracking() {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
+    }
+</script>

@@ -1,0 +1,470 @@
+﻿@model LibraryManagementSystem.ViewModels.LibrarianDashboardViewModel
+@{
+    ViewData["Title"] = "Librarian Dashboard";
+}
+
+<div class="container-fluid py-4 bg-dark min-vh-100">
+    <!-- Success Message -->
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+<div class="mb-4">
+    <h2 class="text-white fw-bold">Welcome, @Model.FirstName</h2>
+    <p class="text-light mb-0">
+        Today is @DateTime.Now.ToString("dddd, MMMM dd, yyyy - hh:mm tt")
+    </p>
+    <p class="text-muted mb-0">Library circulation and inventory overview</p>
+</div>
+
+    <!-- Quick Action Buttons (including temp inventory init) -->
+    <div class="d-flex justify-content-end gap-2 mb-4">
+        <a asp-controller="Book" asp-action="Index" class="btn btn-outline-light">
+            Manage Books
+        </a>
+        <a asp-controller="book" asp-action="borrowedbooks" class="btn btn-outline-info">
+            Manage Loans
+        </a>
+        <a asp-controller="Fine" asp-action="Index" class="btn btn-outline-warning">
+            Manage Fines
+        </a>
+        <a asp-controller="Report" asp-action="Index" class="btn btn-outline-success">
+            View Reports
+        </a>
+       
+        <!-- Temporary inventory init button - remove after testing -->
+        <a asp-controller="Librarian" asp-action="InitializeInventory" class="btn btn-outline-secondary">
+            Initialize Inventory
+        </a>
+        <a asp-controller="Librarian" asp-action="Inventory" class="btn btn-outline-secondary">
+            Inventory
+        </a>
+       
+    </div>
+
+    <!-- Stats Cards Row 1 -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Issued Today</p>
+                    <h3 class="text-info fw-bold">@Model.BooksIssuedToday</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Returned Today</p>
+                    <h3 class="text-success fw-bold">@Model.BooksReturnedToday</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Active Loans</p>
+                    <h3 class="text-primary fw-bold">@Model.ActiveLoansCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Overdue Loans</p>
+                    <h3 class="text-danger fw-bold">@Model.OverdueLoansCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Unpaid Fines</p>
+                    <h3 class="text-warning fw-bold">@Model.UnpaidFinesCount</h3>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <!-- Stats Cards Row 2 - Inventory Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Fine Amount</p>
+                    <h3 class="text-warning fw-bold">KES @Model.UnpaidFinesAmount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Low Stock Items</p>
+                    <h3 class="text-warning fw-bold">@Model.LowStockItemsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Damaged Items</p>
+                    <h3 class="text-danger fw-bold">@Model.DamagedItemsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Missing Items</p>
+                    <h3 class="text-warning fw-bold">@Model.MissingItemsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Damage Reports</p>
+                    <h3 class="text-info fw-bold">@Model.OpenDamageReportsCount</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+    <div class="card bg-dark border-secondary shadow-sm mb-4">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Open Damage Reports</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.OpenDamageReports.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Type</th>
+                                <th>Qty</th>
+                                <th>Reported At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model.OpenDamageReports)
+                            {
+                                <tr>
+                                    <td>@report.Book?.Title</td>
+                                    <td>@report.ReportType</td>
+                                    <td>@report.QuantityAffected</td>
+                                    <td>@report.ReportedAt.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <a asp-controller="Librarian"
+                                           asp-action="ResolveDamageReport"
+                                           asp-route-id="@report.Id"
+                                           class="btn btn-sm btn-outline-info">
+                                            Resolve
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success mb-0">No open damage reports.</div>
+            }
+        </div>
+    </div>
+</div>
+
+    <!-- Main Content Row -->
+    <div class="row g-4">
+        <!-- Left Column - Overdue Loans & Recent Returns -->
+        <div class="col-lg-7">
+            <div class="card bg-dark border-secondary shadow-sm mb-4">
+                <div class="card-header border-secondary">
+                    <h5 class="text-white mb-0">Overdue Loans</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.OverdueLoans.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Book</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var loan in Model.OverdueLoans)
+                                    {
+                                        <tr>
+                                            <td>@(loan.User?.FullName ?? loan.User?.Email)</td>
+                                            <td>@loan.Book?.Title</td>
+                                            <td>@loan.DueDate.ToString("dd MMM yyyy")</td>
+                                            <td><span class="badge bg-danger">Overdue</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success mb-0">No overdue loans.</div>
+                    }
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary shadow-sm mb-4">
+                <div class="card-header border-secondary">
+                    <h5 class="text-white mb-0">Recent Returns</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentReturns.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Book</th>
+                                        <th>Returned On</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var loan in Model.RecentReturns)
+                                    {
+                                        <tr>
+                                            <td>@(loan.User?.FullName ?? loan.User?.Email)</td>
+                                            <td>@loan.Book?.Title</td>
+                                            <td>@loan.ReturnDate?.ToString("dd MMM yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">No recent returns found.</div>
+                    }
+                </div>
+            </div>
+
+            <!-- Top Borrowed Books -->
+            <div class="card bg-dark border-secondary shadow-sm">
+                <div class="card-header border-secondary">
+                    <h5 class="text-white mb-0">Top Borrowed Books</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopBorrowedBooks.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var book in Model.TopBorrowedBooks)
+                            {
+                                <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
+                                    <span>@book.Title</span>
+                                    <span class="badge bg-info">@book.Loans.Count borrows</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">No borrowing history yet.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Inventory Panels -->
+        <div class="col-lg-5">
+            <!-- Low Stock Alerts -->
+            <div class="col-12">
+                <div class="card bg-dark border-secondary shadow-sm mb-4">
+                    <div class="card-header border-secondary">
+                        <h5 class="text-white mb-0">Low Stock Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.LowStockItems.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in Model.LowStockItems)
+                                {
+                                    <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between">
+                                        <span>@item.Book?.Title</span>
+                                        <span class="badge bg-warning text-dark">
+                                            @item.AvailableCopies / threshold @item.ReorderThreshold
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success mb-0">No low stock items.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Damaged and Missing Items -->
+            <div class="col-12">
+                <div class="card bg-dark border-secondary shadow-sm mb-4">
+                    <div class="card-header border-secondary">
+                        <h5 class="text-white mb-0">Damaged and Missing Items</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.DamagedItems.Any() || Model.MissingItems.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Book</th>
+                                            <th>Damaged</th>
+                                            <th>Missing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.DamagedItems
+                                         .Concat(Model.MissingItems)
+                                         .GroupBy(x => x.Id)
+                                         .Select(g => g.First()))
+                                        {
+                                            <tr>
+                                                <td>@item.Book?.Title</td>
+                                                <td>@item.DamagedCopies</td>
+                                                <td>@item.MissingCopies</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success mb-0">No damaged or missing items.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card bg-dark border-secondary shadow-sm mb-4">
+                    <div class="card-header border-secondary">
+                        <h5 class="text-white mb-0"> Damage Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.OpenDamageReports.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Book</th>
+                                            <th>Type</th>
+                                            <th>Qty</th>
+                                            <th>Reported At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var report in Model.OpenDamageReports)
+                                        {
+                                            <tr>
+                                                <td>@report.Book?.Title</td>
+                                                <td>@report.ReportType</td>
+                                                <td>@report.QuantityAffected</td>
+                                                <td>@report.ReportedAt.ToString("dd MMM yyyy")</td>
+                                                <td>
+                                                    <a asp-controller="Librarian"
+                                                       asp-action="ResolveDamageReport"
+                                                       asp-route-id="@report.Id"
+                                                       class="btn btn-sm btn-outline-info">
+                                                        Resolve
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success mb-0">No open damage reports.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Inventory Activity -->
+            <div class="col-12">
+                <div class="card bg-dark border-secondary shadow-sm">
+                    <div class="card-header border-secondary">
+                        <h5 class="text-white mb-0">Recent Inventory Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.RecentInventoryTransactions.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Book</th>
+                                            <th>Action</th>
+                                            <th>Qty</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var tx in Model.RecentInventoryTransactions)
+                                        {
+                                            <tr>
+                                                <td>@tx.InventoryRecord?.Book?.Title</td>
+                                                <td>@tx.TransactionType</td>
+                                                <td>@tx.QuantityChanged</td>
+                                                <td>@tx.CreatedAt.ToString("dd MMM yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info mb-0">No recent inventory activity found.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

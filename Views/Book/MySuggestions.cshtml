@@ -1,0 +1,41 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.BookSuggestion>
+
+@{
+    ViewData["Title"] = "My Book Suggestions";
+}
+
+<h3 class="mb-4">My Book Suggestions</h3>
+
+<div class="table-responsive">
+    <table id="example" class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Title</td>
+                    <td>@s.Author</td>
+                    <td>@s.SuggestedOn.ToShortDateString()</td>
+                    <td>
+                        @if (s.Approved)
+                        {
+                            <span class="badge bg-success">Approved</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

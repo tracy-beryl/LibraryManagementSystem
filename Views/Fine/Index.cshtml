@@ -1,4 +1,5 @@
 ﻿@model List<LibraryManagementSystem.ViewModels.FineViewModel>
+@using LibraryManagementSystem.Models
 
 @{
     ViewData["Title"] = "Fines";
@@ -8,6 +9,10 @@
 <div class="container-fluid py-4">
     <h2>Overdue Fines</h2>
 
+    <form id="antiForgeryForm" method="post">
+        @Html.AntiForgeryToken()
+    </form>
+
     <div class="table-responsive">
         <table id="finesTable" class="table table-bordered table-hover align-middle">
             <thead class="table-dark">
@@ -16,42 +21,248 @@
                     <th>Student</th>
                     <th>Book</th>
                     <th>Due Date</th>
+                    <th>Return Date</th>
                     <th>Days Late</th>
                     <th>Fine Amount (KES)</th>
+                    <th>Loan Status</th>
+                    <th>Payment Status</th>
+                    <th>Payment Method</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                @{ 
+                @{
                     int count = 1;
                 }
-                @foreach (var fine in Model)
+
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var fine in Model)
+                    {
+                        <tr class="@(fine.FinePaymentStatus == FinePaymentStatus.Unpaid ? "table-danger" : fine.FinePaymentStatus == FinePaymentStatus.Pending ? "table-warning" : "")">
+                            <td>@count</td>
+                            <td>@fine.StudentName</td>
+                            <td>@fine.BookTitle</td>
+                            <td>@fine.DueDate.ToShortDateString()</td>
+                            <td>@(fine.ReturnDate.HasValue ? fine.ReturnDate.Value.ToShortDateString() : "-")</td>
+                            <td>@fine.DaysLate</td>
+                            <td>@fine.FineAmount.ToString("N2")</td>
+
+                            <td>
+                                @if (fine.Status == LoanStatus.Returned)
+                                {
+                                    <span class="badge bg-info text-dark">Returned</span>
+                                }
+                                else if (fine.Status == LoanStatus.Lost)
+                                {
+                                    <span class="badge bg-danger">Lost</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Borrowed</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (fine.FinePaymentStatus == FinePaymentStatus.Paid)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending M-Pesa</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Reversed)
+                                {
+                                    <span class="badge bg-dark">Reversed</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Unpaid)
+                                {
+                                    <span class="badge bg-danger">Unpaid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">None</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (fine.PaymentMethod == PaymentMethod.Cash)
+                                {
+                                    <span class="badge bg-primary">Cash</span>
+                                }
+                                else if (fine.PaymentMethod == PaymentMethod.Mpesa)
+                                {
+                                    <span class="badge bg-success">M-Pesa</span>
+                                   
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (fine.ReturnDate.HasValue && fine.FinePaymentStatus == FinePaymentStatus.Unpaid)
+                                {
+                                    <div class="d-flex gap-2">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary"
+                                                onclick="payCash(@fine.LoanId)">
+                                            Cash
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-success"
+                                                onclick="openMpesaModal(@fine.LoanId, '@(fine.StudentName ?? "")')">
+                                            M-Pesa
+                                        </button>
+                                    </div>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Pending)
+                                {
+                                    <span class="text-muted">Awaiting callback</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Paid)
+                                {
+                                    <a asp-action="Receipt"
+                                       asp-route-loanId="@fine.LoanId"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Receipt
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No action</span>
+                                }
+                            </td>
+                        </tr>
+
+                        count++;
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@count</td>
-                        <td>@fine.StudentName</td>
-                        <td>@fine.BookTitle</td>
-                        <td>@fine.DueDate.ToShortDateString()</td>
-                        <td>@fine.DaysLate</td>
-                        <td>@fine.FineAmount</td>
+                        <td colspan="11" class="text-center text-muted">No fines found.</td>
                     </tr>
-
-                    count++;
                 }
             </tbody>
         </table>
     </div>
 </div>
 
-    @section Scripts {
-        <script>
+<div class="modal fade" id="mpesaModal" tabindex="-1" aria-labelledby="mpesaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="mpesaModalLabel">Initiate M-Pesa Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-            new DataTable('#finesTable', {
-                layout: {
-                    topStart: {
-                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            <div class="modal-body">
+                <input type="hidden" id="mpesaLoanId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Student</label>
+                    <input type="text" id="mpesaStudentName" class="form-control" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label for="mpesaPhoneNumber" class="form-label">Phone Number</label>
+                    <input type="text"
+                           id="mpesaPhoneNumber"
+                           class="form-control"
+                           placeholder="e.g. 0712345678 or 254712345678" />
+                    <small class="text-muted">
+                        Enter the number to receive the STK push.
+                    </small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="submitMpesaPayment()">Send STK Push</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+        let mpesaModalInstance = null;
+
+        function payCash(loanId) {
+            if (!confirm("Record this fine as paid by cash?")) return;
+
+            fetch('/Fine/PayCash', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'RequestVerificationToken': token
+                },
+                body: `loanId=${loanId}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        location.reload();
                     }
-                }
-            });
-        </script>
-    }
+                })
+                .catch(() => alert('An error occurred while recording cash payment.'));
+        }
 
+        function openMpesaModal(loanId, studentName) {
+            document.getElementById('mpesaLoanId').value = loanId;
+            document.getElementById('mpesaStudentName').value = studentName || '';
+            document.getElementById('mpesaPhoneNumber').value = '';
+
+            const modalElement = document.getElementById('mpesaModal');
+            mpesaModalInstance = new bootstrap.Modal(modalElement);
+            mpesaModalInstance.show();
+        }
+
+        function submitMpesaPayment() {
+            const loanId = document.getElementById('mpesaLoanId').value;
+            const phoneNumber = document.getElementById('mpesaPhoneNumber').value.trim();
+
+            if (!phoneNumber) {
+                alert('Please enter a phone number.');
+                return;
+            }
+
+            fetch('/Fine/InitiateMpesa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'RequestVerificationToken': token
+                },
+                body: `loanId=${encodeURIComponent(loanId)}&phoneNumber=${encodeURIComponent(phoneNumber)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        if (mpesaModalInstance) {
+                            mpesaModalInstance.hide();
+                        }
+                        location.reload();
+                    }
+                })
+                .catch(() => alert('An error occurred while initiating M-Pesa.'));
+        }
+
+        new DataTable('#finesTable', {
+            layout: {
+                topStart: {
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                }
+            },
+            language: {
+                emptyTable: "No fines found."
+            }
+        });
+    </script>
+}

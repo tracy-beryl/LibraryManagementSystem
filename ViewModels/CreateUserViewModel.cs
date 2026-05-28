@@ -30,8 +30,11 @@ namespace LibraryManagementSystem.ViewModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        [Required]
-        public string IdentificationNumber { get; set; }
+        
+        public string AdmissionNumber { get; set; }
+
+        public string StaffNumber { get; set; }       // better for staff
+        public string Department { get; set; }
 
 
     }

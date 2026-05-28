@@ -1,0 +1,331 @@
+﻿@model LibraryManagementSystem.ViewModels.LecturerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Lecturer Dashboard";
+}
+
+<div class="container-fluid py-4 bg-dark min-vh-100">
+    <div class="mb-4">
+        <h2 class="text-white fw-bold">Welcome, @Model.FirstName</h2>
+        <p class="text-light mb-0">Unit resource and learning support overview</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a asp-controller="Lecturer" asp-action="AddResource" class="btn btn-outline-success">
+            Add Resource
+        </a>
+        <a asp-controller="Lecturer" asp-action="MyResources" class="btn btn-outline-info">
+            My Resources
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Assigned Units</p>
+                    <h3 class="text-info fw-bold">@Model.AssignedUnitsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Total Resources</p>
+                    <h3 class="text-primary fw-bold">@Model.TotalResourcesCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Past Papers</p>
+                    <h3 class="text-warning fw-bold">@Model.PastPapersCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-light small mb-1">Students Behind</p>
+                    <h3 class="text-danger fw-bold">@Model.StudentsBehindCount</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">My Units</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.Units.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Unit Code</th>
+                                <th>Unit Name</th>
+                                <th>Program</th>
+                                <th>Level</th>
+                                <th>Semester</th>
+                                <th>Books</th>
+                                <th>Docs</th>
+                                <th>Past Papers</th>
+                                <th>Videos</th>
+                                <th>Web Links</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var unit in Model.Units)
+                            {
+                                <tr>
+                                    <td>@unit.UnitCode</td>
+                                    <td>@unit.UnitName</td>
+                                    <td>@unit.Program</td>
+                                    <td>@unit.Level</td>
+                                    <td>@unit.Semester</td>
+                                    <td>@unit.BooksCount</td>
+                                    <td>@unit.DocumentsCount</td>
+                                    <td>@unit.PastPapersCount</td>
+                                    <td>@unit.VideosCount</td>
+                                    <td>@unit.WebLinksCount</td>
+                                    <td>
+                                        <span class="badge bg-info">@unit.TotalResourcesCount</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No unit assignments found for this lecturer.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm mt-4">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+            <h5 class="text-white mb-0">Resource Gap Alerts</h5>
+          
+        </div>
+
+        <div class="card-body">
+            @if (Model.ResourceGapAlerts.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Unit Code</th>
+                                <th>Unit Name</th>
+                                <th>Program</th>
+                                <th>Level</th>
+                                <th>Semester</th>
+                                <th>Total Resources</th>
+                                <th>Gap Summary</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var gap in Model.ResourceGapAlerts)
+                            {
+                                <tr>
+                                    <td>@gap.UnitCode</td>
+                                    <td>@gap.UnitName</td>
+                                    <td>@gap.Program</td>
+                                    <td>@gap.Level</td>
+                                    <td>@gap.Semester</td>
+                                    <td>
+                                        <span class="badge bg-info">@gap.TotalResourcesCount</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">@gap.Summary</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small me-2">ID: @gap.CompetencyStandardId</span>
+
+                                        @if (gap.CompetencyStandardId > 0)
+                                        {
+                                            <a asp-controller="Lecturer"
+                                               asp-action="AddResource"
+                                               asp-route-competencyStandardId="@gap.CompetencyStandardId"
+                                               class="btn btn-sm btn-outline-success">
+                                                Add Resource
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">No standard ID</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success mb-0">
+                    No resource gaps detected for assigned units.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm mt-4">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Students Behind Progress</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.StudentsBehind.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Admission No.</th>
+                                <th>Unit Code</th>
+                                <th>Unit Name</th>
+                                <th>Completed</th>
+                                <th>Total</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model.StudentsBehind)
+                            {
+                                <tr>
+                                    <td>@student.StudentName</td>
+                                    <td>@student.AdmissionNumber</td>
+                                    <td>@student.UnitCode</td>
+                                    <td>@student.UnitName</td>
+                                    <td>@student.CompletedResources</td>
+                                    <td>@student.TotalResources</td>
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            @student.CompletionPercentage%
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success mb-0">
+                    No students currently flagged as behind.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm mt-4">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Most Used Resources</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.PopularResources.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Unit Code</th>
+                                <th>Type</th>
+                                <th>Usage Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var resource in Model.PopularResources)
+                            {
+                                <tr>
+                                    <td>@resource.Title</td>
+                                    <td>@resource.UnitCode</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@resource.ResourceType</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@resource.UsageCount</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No resource usage data found yet.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm mt-4">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Past Paper Insights</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.PastPaperInsights.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Unit Code</th>
+                                <th>Attempts</th>
+                                <th>Avg Difficulty</th>
+                                <th>Avg Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var paper in Model.PastPaperInsights)
+                            {
+                                <tr>
+                                    <td>@paper.Title</td>
+                                    <td>@paper.UnitCode</td>
+                                    <td>
+                                        <span class="badge bg-info">@paper.AttemptCount</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">@paper.AverageDifficulty</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">@paper.AverageConfidence</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No past paper attempt data found yet.
+                </div>
+            }
+        </div>
+    </div>
+</div>

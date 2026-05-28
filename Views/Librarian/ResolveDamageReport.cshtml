@@ -1,0 +1,82 @@
+﻿@model LibraryManagementSystem.ViewModels.ResolveDamageReportViewModel
+
+@{
+    ViewData["Title"] = "Resolve Damage Report";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Resolve Damage Report</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="ResolveDamageReport" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input asp-for="ReportId" type="hidden" />
+                <input asp-for="BookId" type="hidden" />
+                <input asp-for="BookTitle" type="hidden" />
+                <input asp-for="ReportType" type="hidden" />
+                <input asp-for="QuantityAffected" type="hidden" />
+                <input asp-for="Description" type="hidden" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Book</label>
+                    <input class="form-control" value="@Model.BookTitle" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Report Type</label>
+                    <input class="form-control" value="@Model.ReportType" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Quantity Affected</label>
+                    <input class="form-control" value="@Model.QuantityAffected" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Original Description</label>
+                    <textarea class="form-control" rows="3" readonly>@Model.Description</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ResolutionAction" class="form-label"></label>
+                    <select asp-for="ResolutionAction" class="form-select">
+                        <option value="">Select Action</option>
+
+                        @if (Model.ReportType == "Damaged")
+                        {
+                            <option value="Repaired">Repaired</option>
+                            <option value="WrittenOff">Written Off</option>
+                        }
+                        else if (Model.ReportType == "Missing")
+                        {
+                            <option value="Recovered">Recovered</option>
+                            <option value="WrittenOff">Written Off</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ResolutionAction" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ResolutionNotes" class="form-label"></label>
+                    <textarea asp-for="ResolutionNotes" class="form-control" rows="4" placeholder="Optional notes about the resolution"></textarea>
+                    <span asp-validation-for="ResolutionNotes" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark">Resolve Report</button>
+                    <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

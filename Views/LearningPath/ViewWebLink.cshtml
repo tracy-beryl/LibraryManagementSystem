@@ -1,0 +1,128 @@
+﻿@model LibraryManagementSystem.ViewModels.ViewWebLinkViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-4">
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary">
+            <h4 class="text-white mb-0">@Model.Title</h4>
+        </div>
+
+        <div class="card-body">
+            <p class="text-light">
+                Open the learning resource below. Stay engaged for at least <strong>2 minutes</strong>,
+                then answer the confirmation question.
+            </p>
+
+            <div class="mb-3">
+                <a href="@Model.ExternalUrl" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    Open Resource
+                </a>
+            </div>
+
+            <div class="mb-4">
+                <span class="badge bg-info text-dark" id="timerStatus">Time Spent: 0s</span>
+            </div>
+
+            <hr class="border-secondary" />
+
+            <div id="quizSection" style="display:none;">
+                <h5 class="text-white">Quick Confirmation</h5>
+                <p class="text-light mb-3">Did you review the linked resource and understand its main content?</p>
+
+                <div class="form-check text-light mb-2">
+                    <input class="form-check-input" type="radio" name="quizAnswer" id="answerYes" value="100">
+                    <label class="form-check-label" for="answerYes">
+                        Yes, I reviewed it and understood the main ideas.
+                    </label>
+                </div>
+
+                <div class="form-check text-light mb-3">
+                    <input class="form-check-input" type="radio" name="quizAnswer" id="answerNo" value="0">
+                    <label class="form-check-label" for="answerNo">
+                        No, I did not review it properly.
+                    </label>
+                </div>
+
+                <button id="submitQuizBtn" class="btn btn-success">Submit</button>
+            </div>
+
+            <div id="resultMessage" class="mt-3 text-light"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let timeSpent = 0;
+        let timerStarted = false;
+        let timerInterval = null;
+
+        const timerStatus = document.getElementById("timerStatus");
+        const quizSection = document.getElementById("quizSection");
+        const submitQuizBtn = document.getElementById("submitQuizBtn");
+        const resultMessage = document.getElementById("resultMessage");
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+
+            timerInterval = setInterval(function () {
+                if (!document.hidden) {
+                    timeSpent++;
+                    timerStatus.innerText = "Time Spent: " + timeSpent + "s";
+
+                    if (timeSpent >= 120) {
+                        quizSection.style.display = "block";
+                    }
+                }
+            }, 1000);
+        }
+
+        document.querySelector('a[href="@Model.ExternalUrl"]').addEventListener("click", function () {
+            startTimer();
+        });
+
+        submitQuizBtn.addEventListener("click", async function () {
+            const selected = document.querySelector('input[name="quizAnswer"]:checked');
+
+            if (!selected) {
+                resultMessage.innerHTML = '<span class="text-warning">Please select an answer first.</span>';
+                return;
+            }
+
+            const quizScore = parseInt(selected.value);
+
+            try {
+                const response = await fetch('/LearningPath/SubmitWebLinkQuiz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        resourceId: @Model.ResourceId,
+                        quizScore: quizScore,
+                        timeSpentSeconds: timeSpent
+                    })
+                });
+
+                if (!response.ok) {
+                    resultMessage.innerHTML = '<span class="text-danger">Submission failed.</span>';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.completed) {
+                    resultMessage.innerHTML = '<span class="text-success">Resource marked as completed.</span>';
+                } else {
+                    resultMessage.innerHTML = '<span class="text-warning">Requirement not met yet. Spend at least 2 minutes and answer correctly.</span>';
+                }
+            } catch (error) {
+                console.error(error);
+                resultMessage.innerHTML = '<span class="text-danger">An error occurred while submitting.</span>';
+            }
+        });
+    </script>
+}

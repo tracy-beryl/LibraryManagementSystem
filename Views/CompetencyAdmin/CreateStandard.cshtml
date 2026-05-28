@@ -1,0 +1,38 @@
+﻿@model LibraryManagementSystem.Models.CDACC.CompetencyStandard
+
+<h2>Create Competency Standard</h2>
+
+<form asp-action="CreateStandard" method="post">
+
+    <div>
+        <label>Program</label>
+        <input asp-for="Program" class="form-control" />
+    </div>
+
+    <div>
+        <label>Level</label>
+        <input asp-for="Level" class="form-control" />
+    </div>
+
+    <div>
+        <label>Semester</label>
+        <input asp-for="Semester" class="form-control" />
+    </div>
+
+    <div>
+        <label>Unit Code</label>
+        <input asp-for="UnitCode" class="form-control" />
+    </div>
+
+    <div>
+        <label>Unit Name</label>
+        <input asp-for="UnitName" class="form-control" />
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Save
+    </button>
+
+</form>

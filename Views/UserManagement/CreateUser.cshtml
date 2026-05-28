@@ -49,20 +49,35 @@
 
                             <div class="col-12 col-md-6">
                                 <label asp-for="Roles" class="form-label">Select Role</label>
-                                <select asp-for="Roles" class="form-select">
+                                <select asp-for="Roles" class="form-select" id="roleSelect">
                                     <option value="">Select Role</option>
                                     <option>Admin</option>
-                                    <option>Staff</option>
+                                    <option>Librarian</option>
+                                    <option>Lecturer</option>
                                     <option>Student</option>
                                 </select>
                                 <span asp-validation-for="Roles" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-12 col-md-6">
-                                <label id="idLabel" for="IdentificationNumber" class="form-label"></label>
-                                <input asp-for="IdentificationNumber" class="form-control" />
-                                <span asp-validation-for="IdentificationNumber" class="text-danger small"></span>
+                            <div class="col-12 col-md-6" id="studentIdField" style="display:none;">
+                                <label asp-for="AdmissionNumber" class="form-label">Admission Number</label>
+                                <input asp-for="AdmissionNumber" class="form-control" />
+                                <span asp-validation-for="AdmissionNumber" class="text-danger small"></span>
                             </div>
+
+                            <div class="col-12 col-md-6" id="staffIdField" style="display:none;">
+                                <label asp-for="StaffNumber" class="form-label">Staff Number</label>
+                                <input asp-for="StaffNumber" class="form-control" />
+                                <span asp-validation-for="StaffNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6" id="departmentField" style="display:none;">
+                                <label asp-for="Department" class="form-label">Department</label>
+                                <input asp-for="Department" class="form-control" />
+                                <span asp-validation-for="Department" class="text-danger small"></span>
+                            </div>
+
+
 
                             <div class="col-12 text-center mt-3">
                                 <button type="submit" class="btn btn-secondary w-100">Create</button>
@@ -81,25 +96,28 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const roleSelect = document.querySelector('[name="Roles"]');
-            const idLabel = document.getElementById("idLabel");
+            const roleSelect = document.getElementById("roleSelect");
+            const studentIdField = document.getElementById("studentIdField");
+            const staffIdField = document.getElementById("staffIdField");
+            const departmentField = document.getElementById("departmentField");
 
-            function updateIdLabel() {
+            function updateFields() {
                 const selectedRole = roleSelect.value;
+
+                studentIdField.style.display = "none";
+                staffIdField.style.display = "none";
+                departmentField.style.display = "none";
+
                 if (selectedRole === "Student") {
-                    idLabel.textContent = "Enter Student ID";
-                } else if (selectedRole === "Staff") {
-                    idLabel.textContent = "Enter Staff ID";
-                } else {
-                    idLabel.textContent = "Enter ID";
+                    studentIdField.style.display = "block";
+                } else if (selectedRole === "Librarian" || selectedRole === "Lecturer") {
+                    staffIdField.style.display = "block";
+                    departmentField.style.display = "block";
                 }
             }
 
-            // Initial label set
-            updateIdLabel();
-
-            // Update label on change
-            roleSelect.addEventListener("change", updateIdLabel);
+            updateFields();
+            roleSelect.addEventListener("change", updateFields);
         });
     </script>
 }

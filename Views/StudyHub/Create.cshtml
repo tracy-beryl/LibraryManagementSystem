@@ -1,0 +1,21 @@
+﻿@model LibraryManagementSystem.ViewModels.CreateProjectViewModel
+
+    <h4 class="fw-bold mb-3">Create New Project</h4>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="ProjectName" class="form-label"></label>
+            <input asp-for="ProjectName" class="form-control" />
+            <span asp-validation-for="ProjectName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Create Project
+        </button>
+    </form>
+

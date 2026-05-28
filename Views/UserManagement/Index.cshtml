@@ -55,7 +55,8 @@
                                             data-bs-target="#editUserModal"
                                             data-email="@user.Email"
                                             data-fullname="@user.FullName"
-                                            data-phonenumber="@user.PhoneNumber">
+                                            data-phonenumber="@user.PhoneNumber"
+                                            data-role="@user.Role">
                                         Edit
                                     </button>
                                 </td>
@@ -171,24 +172,58 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form asp-action="EditUser" asp-controller="UserManagement" method="post">
+                @Html.AntiForgeryToken()
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
                     <input type="hidden" name="Email" id="editEmail" />
+
                     <div class="mb-3">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="FullName" class="form-control" id="editFullName" required />
+                        <input type="text"
+                               name="FullName"
+                               class="form-control"
+                               id="editFullName"
+                               required />
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Phone Number</label>
-                        <input type="text" name="PhoneNumber" class="form-control" id="editPhoneNumber" required />
+                        <input type="text"
+                               name="PhoneNumber"
+                               class="form-control"
+                               id="editPhoneNumber"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select name="Role"
+                                class="form-select"
+                                id="editRole"
+                                required>
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Librarian">Librarian</option>
+                            <option value="Lecturer">Lecturer</option>
+                            <option value="Student">Student</option>
+                        </select>
                     </div>
                 </div>
+
                 <div class="modal-footer">
-                    <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-dark">Save changes</button>
+                    <button class="btn btn-dark"
+                            type="button"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-dark">
+                        Save changes
+                    </button>
                 </div>
             </form>
         </div>
@@ -274,11 +309,12 @@
         const email = button.getAttribute('data-email');
         const fullName = button.getAttribute('data-fullname');
         const phoneNumber = button.getAttribute('data-phonenumber');
-
+        const role = button.getAttribute('data-role');
 
         document.getElementById('editEmail').value = email;
         document.getElementById('editFullName').value = fullName;
         document.getElementById('editPhoneNumber').value = phoneNumber;
+        document.getElementById('editRole').value = role;
     });
 </script>
 

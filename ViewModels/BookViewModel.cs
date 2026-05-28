@@ -18,6 +18,12 @@ namespace LibraryManagementSystem.ViewModels
         public string StudentId { get; set; }
         public int BookId { get; set; }
         public int AvailableCopies { get; set; }
+        public string SelectedDepartment { get; set; }
+        public string SelectedCategory { get; set; }
       
+
+        public List<string> Departments { get; set; }
+        public List<string> Categories { get; set; }
+
     }
 }

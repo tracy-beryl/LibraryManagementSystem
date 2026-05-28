@@ -1,15 +1,23 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using LibraryManagementSystem.Models;
-@inject SignInManager<ApplicationUser> signInManager;
-@inject UserManager<ApplicationUser> user;
-@inject LibraryManagementSystem.Service.MyService service;
+@using LibraryManagementSystem.Models
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> user
+@inject LibraryManagementSystem.Service.MyService service
 
 @{
     var loggedIdUser = await user.GetUserAsync(User);
+
     var isStudent = false;
+    var isLecturer = false;
+    var isLibrarian = false;
+    var isAdmin = false;
+
     if (loggedIdUser != null)
     {
         isStudent = await service.IsStudent(loggedIdUser.Id);
+        isLecturer = await user.IsInRoleAsync(loggedIdUser, "Lecturer");
+        isLibrarian = await user.IsInRoleAsync(loggedIdUser, "Librarian");
+        isAdmin = await user.IsInRoleAsync(loggedIdUser, "Admin");
     }
 }
 
@@ -21,22 +29,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title></title>
 
+    <!--  PWA Manifest + Theme Color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d6efd" />
     <environment include="Development">
+        <!-- CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
-
-        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-        @*exporting data*@
         <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.4/css/buttons.dataTables.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+
+        <!-- JS: order matters -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+
         <script src="https://cdn.datatables.net/buttons/3.2.4/js/dataTables.buttons.js"></script>
         <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.dataTables.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -45,18 +57,12 @@
         <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/3.2.4/js/buttons.print.min.js"></script>
 
-        <!-- Select2 CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-        <!-- jQuery (required by Select2) -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-        <!-- Select2 JS -->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
-        <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     </environment>
 
@@ -72,7 +78,7 @@
     </environment>
 
 
-   
+
     @RenderSection("Styles", required: false)
 
 
@@ -149,7 +155,16 @@
         <!-- FIXED NAVBAR -->
         <nav class="custom_navbar navbar navbar-expand-lg navbar-dark fixed-top shadow">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold" asp-controller="home" asp-action="index">📚 Beta Library</a>
+                <a asp-controller="Home" asp-action="Index"
+                   class="navbar-brand d-flex align-items-center">
+
+                    <img src="~/images/logo.png"
+                         alt="Logo"
+                         style="height:35px;"
+                         class="me-2" />
+
+                    Bumbe Library
+                </a>
 
                 <!-- Navbar toggler for small screens -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
@@ -188,7 +203,7 @@
                 <div class="col-md-3 col-lg-2 collapse d-md-block p-0" id="sidebarCollapse">
                     <div class="sticky-sidebar">
                         <nav class="sidenav1 px-3">
-                            @if (!isStudent)
+                            @if (isAdmin)
                             {
                                 <ul class="sidebar-menu">
                                     <li class="sidebar-item">
@@ -197,33 +212,36 @@
                                             <span class="navbar-text">Dashboard</span>
                                         </a>
                                     </li>
+
+                                </ul>
+
+                            }
+
+                            @if (isLecturer)
+                            {
+                                <ul class="sidebar-menu">
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="Lecturer" asp-action="dashboard">
+                                            <img src="~/images/statistics.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Dashboard</span>
+                                        </a>
+                                    </li>
+
                                 </ul>
                             }
 
-                            <ul class="sidebar-menu">
-                                <li class="sidebar-item">
-                                    <a class="navbar-brand" asp-controller="book" asp-action="index">
-                                        <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
-                                        <span class="navbar-text">Books</span>
-                                    </a>
-                                </li>
-                            </ul>
-
-                            @if (!isStudent)
+                            @if (isLibrarian)
                             {
                                 <ul class="sidebar-menu">
+
                                     <li class="sidebar-item">
-                                        <a class="navbar-brand" asp-controller="book" asp-action="borrowedbooks">
-                                            <img src="~/images/stack-of-books.png" class="img-fluid" style="max-width: 20px;" />
-                                            <span class="navbar-text">Borrowed Books</span>
+                                        <a class="navbar-brand" asp-controller="Librarian" asp-action="dashboard">
+                                            <img src="~/images/statistics.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Dashboard</span>
                                         </a>
                                     </li>
-                                    <li class="sidebar-item">
-                                        <a class="navbar-brand" asp-controller="book" asp-action="returnedBooks">
-                                            <img src="~/images/history.png" class="img-fluid" style="max-width: 20px;" />
-                                            <span class="navbar-text">Returned History</span>
-                                        </a>
-                                    </li>
+
                                 </ul>
                             }
 
@@ -236,6 +254,58 @@
                                             <span class="navbar-text">Student Dashboard</span>
                                         </a>
                                     </li>
+
+                                </ul>
+
+                            }
+
+                            @if (isStudent || isLecturer || isLibrarian || isAdmin)
+                            {
+                                <ul class="sidebar-menu">
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="Book" asp-action="Index">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Books</span>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            }
+
+                            @if (isLecturer)
+                            {
+                                <ul class="sidebar-menu">
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="PastPapers" asp-action="PastPapers">
+                                            <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Past Papers</span>
+                                        </a>
+                                    </li>
+
+
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="SoftCopy" asp-action="Index">
+                                            <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Soft Copies</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="Lecturer" asp-action="MyResources">
+                                            <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">MyResources</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            }
+
+
+
+                            @if (isStudent)
+                            {
+                                <ul class="sidebar-menu">
+
                                     <li class="sidebar-item">
                                         <a class="navbar-brand" asp-controller="book" asp-action="myborrowedbooks">
                                             <img src="~/images/stack-of-books.png" class="img-fluid" style="max-width: 20px;" />
@@ -254,55 +324,186 @@
                                             <span class="navbar-text">My Fines</span>
                                         </a>
                                     </li>
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="fine" asp-action="mypayments">
+                                            <img src="~/images/fine.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">My Payments</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="book" asp-action="mysuggestions">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">My Suggestions</span>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="book" asp-action="myreservations">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">MyReservations</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="nav-link position-relative" asp-controller="StudyHub" asp-action="MyInvitations">
+
+                                            <!-- Icon / Label -->
+                                            <span>📩 MyInvitations</span>
+
+                                            <!-- Badge -->
+                                            <span id="inviteBadge"
+                                                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                0
+                                            </span>
+
+                                        </a>
+                                    </li>
+
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="StudyHub" asp-action="index">
+                                            <img src="~/images/statistics.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">StudyHub</span>
+                                        </a>
+                                    </li>
+
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="LearningPath" asp-action="index">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">MyLearningPath</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="PastPapers" asp-action="PastPapers">
+                                            <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Past Papers</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="SoftCopy" asp-action="Index">
+                                            <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Soft Copies</span>
+                                        </a>
+                                    </li>
+
                                 </ul>
                             }
 
-                            <ul class="sidebar-menu">
-                                <li class="sidebar-item">
-                                    <a class="navbar-brand" asp-controller="pastpapers" asp-action="pastpapers">
-                                        <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
-                                        <span class="navbar-text">Past Papers</span>
-                                    </a>
-                                </li>
-                            </ul>
 
-                            <ul class="sidebar-menu">
-                                <li class="sidebar-item">
-                                    <a class="navbar-brand" asp-controller="softcopy" asp-action="index">
-                                        <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
-                                        <span class="navbar-text">Soft Copies</span>
-                                    </a>
-                                </li>
-                            </ul>
 
-                            @if (!isStudent)
+
+
+                            @if (isAdmin || isLibrarian)
                             {
                                 <ul class="sidebar-menu">
                                     <li class="sidebar-item">
-                                        <a class="navbar-brand" asp-controller="usermanagement" asp-action="index">
-                                            <img src="~/images/group.png" class="img-fluid" style="max-width: 20px;" />
-                                            <span class="navbar-text">User Management</span>
+                                        <a class="navbar-brand" asp-controller="book" asp-action="borrowedbooks">
+                                            <img src="~/images/stack-of-books.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Borrowed Books</span>
                                         </a>
                                     </li>
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="book" asp-action="returnedBooks">
+                                            <img src="~/images/history.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Returned History</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="book" asp-action="booksuggestions">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Book Suggestions</span>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="navbar-brand" asp-controller="book" asp-action="reservations">
+                                            <img src="~/images/open-book.png" class="img-fluid" style="max-width: 20px;" />
+                                            <span class="navbar-text">Reservations</span>
+                                        </a>
+                                    </li>
+
+
                                     <li class="sidebar-item">
                                         <a class="navbar-brand" asp-controller="fine" asp-action="index">
                                             <img src="~/images/fine.png" class="img-fluid" style="max-width: 20px;" />
                                             <span class="navbar-text">Fine</span>
                                         </a>
                                     </li>
-                                    <li class="sidebar-item">
-                                        <a class="navbar-brand" asp-controller="report" asp-action="index">
-                                            <img src="~/images/myreport.png" class="img-fluid" style="max-width: 20px;" />
-                                            <span class="navbar-text">Reports</span>
-                                        </a>
-                                    </li>
-                                    <li class="sidebar-item">
-                                        <a class="navbar-brand" asp-controller="Settings" asp-action="index">
-                                            <img src="~/images/myreport.png" class="img-fluid" style="max-width: 20px;" />
-                                            <span class="navbar-text">Settings</span>
-                                        </a>
-                                    </li>
+
+
+
                                 </ul>
+
+
+
+                                @if (isLibrarian || isAdmin)
+                                {
+
+                                    <ul class="sidebar-menu">
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="PastPapers" asp-action="PastPapers">
+                                                <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">Past Papers</span>
+                                            </a>
+                                        </li>
+
+
+
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="SoftCopy" asp-action="Index">
+                                                <img src="~/images/document.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">Soft Copies</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                }
+
+                                @if (isAdmin)
+
+
+                                {
+
+                                    <ul class="sidebar-menu">
+
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="usermanagement" asp-action="index">
+                                                <img src="~/images/group.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">User Management</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="report" asp-action="index">
+                                                <img src="~/images/myreport.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">Reports</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="CompetencyAdmin" asp-action="resources">
+                                                <img src="~/images/myreport.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">CDACC</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="lecturerassignment" asp-action="index">
+                                                <img src="~/images/statistics.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">LecturerAssignment</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="sidebar-item">
+                                            <a class="navbar-brand" asp-controller="settings" asp-action="index">
+                                                <img src="~/images/statistics.png" class="img-fluid" style="max-width: 20px;" />
+                                                <span class="navbar-text">Settings</span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                }
                             }
                         </nav>
                     </div>
@@ -319,6 +520,47 @@
 
     @RenderSection("Scripts", required: false)
 
+    <!--  PWA Scripts -->
+    <script src="~/js/idb-helpers.js"></script>
+    <script src="~/js/pwa-sync.js"></script>
+    <script src="~/js/sw-register.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            if (window.pwaSync && typeof window.pwaSync.init === 'function') {
+                window.pwaSync.init();
+            }
+        });
+    </script>
+
+    <script>
+        function loadInviteCount() {
+            fetch('/StudyHub/GetPendingInvitationCount')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server returned " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const badge = document.getElementById('inviteBadge');
+                    badge.innerText = data.count;
+                    badge.style.display = data.count > 0 ? 'inline-block' : 'none';
+                })
+                .catch(err => console.error(err));
+        }
+
+        loadInviteCount();
+        setInterval(loadInviteCount, 30000); // refresh every 30 seconds
+    </script>
+
+    @*<script>
+        $(document).ready(function () {
+            $('table').DataTable({
+                responsive: true,
+                pageLength: 10
+            });
+        });
+    </script>*@
 
 </body>
 </html>
