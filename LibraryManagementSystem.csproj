@@ -6,6 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20260127063901_AddBookReservations.cs" />
+    <Compile Remove="Migrations\20260127063901_AddBookReservations.Designer.cs" />
+    <Compile Remove="Migrations\20260401074522_PreventDuplicateBooks.cs" />
+    <Compile Remove="Migrations\20260401074522_PreventDuplicateBooks.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="EPPlus" Version="8.4.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.4.0" />
+    <PackageReference Include="itext7" Version="9.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.32">
@@ -22,12 +33,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\" />
+    <Folder Include="Enums\" />
+    <Folder Include="wwwroot\files\" />
+    <Folder Include="wwwroot\softcopy\" />
     <Folder Include="wwwroot\papers\" />
+    <Folder Include="wwwroot\uploads\documents\" />
+    <Folder Include="wwwroot\uploads\covers\" />
+    <Folder Include="wwwroot\uploads\pastpapers\" />
+    <Folder Include="wwwroot\uploads\projects\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Views\UserManagement\CreateRole.cshtml" />
+    <None Include="wwwroot\js\site.js" />
   </ItemGroup>
 
 </Project>

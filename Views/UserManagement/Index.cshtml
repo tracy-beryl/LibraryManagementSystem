@@ -1,126 +1,403 @@
-﻿<!-- Tab links -->
-<!--<div class="tab">
-    <button class="tablinks" onclick="/*openCity(event, 'London')*/">London</button>
-    <button class="tablinks" onclick="/*openCity(event, 'Paris')*/">Paris</button>
-    <button class="tablinks" onclick="/*openCity(event, 'Tokyo')*/">Tokyo</button>
-</div>-->
+﻿@model LibraryManagementSystem.ViewModels.UserAndRoleViewModel
 
-<!-- Tab content -->
-<!--<div id="London" class="tabcontent">
-    <h3>London</h3>
-    <p>London is the capital city of England.</p>
-</div>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<div id="Paris" class="tabcontent">
-    <h3>Paris</h3>
-    <p>Paris is the capital of France.</p>
-</div>
+<div class="container-fluid py-4">
+    <!-- Tabs Header -->
+    <div class="card-header bg-white d-flex flex-wrap gap-2 mb-3" role="tablist">
+        <button class="btn btn-dark active" id="nav-users-tab" data-bs-toggle="tab"
+                data-bs-target="#Users" aria-selected="true" aria-controls="Users" type="button">
+            Users
+        </button>
 
-<div id="Tokyo" class="tabcontent">
-    <h3>Tokyo</h3>
-    <p>Tokyo is the capital of Japan.</p>
-</div>
-
-<script>
-    //function openCity(evt, cityName) {
-    //    // Declare all variables-->
-        <!--var i, tabcontent, tablinks;
-
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-
-        // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
-        evt.currentTarget.className += " active";
-</script>-->
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
-
-<div class="container-fluid">
-<div class="tab">
-    <button class="tablinks" onclick="openUser(event, 'Users')">Users</button>
-    <button class="tablinks" onclick="openUser(event, 'Roles')">Roles</button>
-
-</div>
- Tab content 
-<div id="Users" class="tabcontent">
-    <div class="container-md">
-        <table id="example" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-
-                    <th>FullName</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th colspan="2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <button class="btn btn-dark" id="nav-roles-tab" data-bs-toggle="tab"
+                data-bs-target="#Roles" aria-selected="false" aria-controls="Roles" type="button">
+            Roles
+        </button>
     </div>
 
+    <div class="tab-content">
+        <!-- USERS TAB -->
+        <div class="tab-pane fade show active shadow-sm p-3 bg-white rounded" id="Users" role="tabpanel">
+            <div class="d-flex justify-content-end mb-3">
+                <a class="btn btn-sm btn-outline-dark" asp-action="CreateUser" asp-controller="UserManagement">Create User</a>
+            </div>
 
+            <div class="table-responsive">
+                <table id="users-table" class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th colspan="2" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int count = 1;
+                        }
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.Role</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-dark"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editUserModal"
+                                            data-email="@user.Email"
+                                            data-fullname="@user.FullName"
+                                            data-phonenumber="@user.PhoneNumber"
+                                            data-role="@user.Role">
+                                        Edit
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form method="post" asp-action="DeactivateUser" asp-controller="UserManagement"
+                                          onsubmit="return confirmUserDeactivate(event)">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="email" value="@user.Email" />
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">Close</button>
+                                    </form>
 
+                                </td>
+                            </tr>
+
+                            count++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROLES TAB -->
+        <div class="tab-pane fade shadow-sm p-3 bg-white rounded" id="Roles" role="tabpanel">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createRoleModal">Create Role</button>
+            </div>
+
+            <div class="table-responsive">
+                <table id="roles-table" class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Role</th>
+                            <th colspan="2" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <tr>
+                                <td>@role.RoleName</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editRoleModal"
+                                            data-rolename="@role.RoleName">
+                                        Edit
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <form method="post" asp-action="DeactivateRole" asp-controller="UserManagement"
+                                          onsubmit="return confirmRoleDeactivate(event)">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="roleName" value="@role.RoleName" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">Close</button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="Roles" class="tabcontent">
-    <div class="container-md">
-        <table id="example" class="table table-bordered table-striped">
-            <thead>
-                <tr>
 
-                    <th>FullName</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th>Role</th>
-                    <th colspan="2">Actions</th>
-                </tr>
-            </thead>
+<div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form asp-action="CreateRole" asp-controller="UserManagement" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoleModalLongTitle">Create New Role</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
-        </table>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input name="RoleName" class="form-control" placeholder="Name" required />
+                        <span class="text-danger">@Html.ValidationMessage("RoleName")</span>
+
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gridCheck">
+                        <label class="form-check-label" for="gridCheck">
+                            IsSelected
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-dark" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark">Save changes</button>
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
 
 </div>
 
 
+
+
+
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="EditUser" asp-controller="UserManagement" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="Email" id="editEmail" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text"
+                               name="FullName"
+                               class="form-control"
+                               id="editFullName"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text"
+                               name="PhoneNumber"
+                               class="form-control"
+                               id="editPhoneNumber"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select name="Role"
+                                class="form-select"
+                                id="editRole"
+                                required>
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Librarian">Librarian</option>
+                            <option value="Lecturer">Lecturer</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-dark"
+                            type="button"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-dark">
+                        Save changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+
+
+<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="EditRole" asp-controller="UserManagement" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="OldRoleName" id="editOldRoleName" />
+                    <div class="mb-3">
+                        <label class="form-label">New Role Name</label>
+                        <input type="text" name="NewRoleName" class="form-control" id="editNewRoleName" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-dark">Save Changes</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
-    new DataTable('#example');
+    function confirmUserDeactivate(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This user will be deactivated and cannot log in.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, deactivate user!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+        return false;
+    }
+
+    function confirmRoleDeactivate(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This role will be deactivated and unavailable to assign.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, deactivate role!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+        return false;
+    }
+</script>
+
+
+<script>
+    const editUserModal = document.getElementById('editUserModal');
+
+    editUserModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        const email = button.getAttribute('data-email');
+        const fullName = button.getAttribute('data-fullname');
+        const phoneNumber = button.getAttribute('data-phonenumber');
+        const role = button.getAttribute('data-role');
+
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editFullName').value = fullName;
+        document.getElementById('editPhoneNumber').value = phoneNumber;
+        document.getElementById('editRole').value = role;
+    });
 </script>
 
 <script>
-    function openUser(evt, userInfo) {
-        // Declare all variables
-        var i, tabcontent, tablinks;
+    const editRoleModal = document.getElementById('editRoleModal');
 
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
+    editRoleModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
 
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
+        const roleName = button.getAttribute('data-rolename');
 
-        // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
-        evt.currentTarget.className += " active";
+
+        document.getElementById('editOldRoleName').value = roleName;
+        document.getElementById('editNewRoleName').value = roleName;
+    });
 </script>
+
+<script>
+    $(document).ready(function () {
+        new DataTable('#users-table', {
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3,4]
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            title: '',
+                            customize: function (win) {
+                                const logoUrl = '/images/logo.png';
+                                const institutionName = 'KCA University';
+                                const heading = `
+                                <div style="display: flex; justify-content: space-between;">
+                                    <img src="${logoUrl}" height="50" />
+                                    <div style="text-align: right;">
+                                        <strong>${institutionName}</strong><br/>
+                                        P.O. Box 56808, Nairobi<br/>
+                                        Tel: +254 20 8646103 / 8646108
+                                    </div>
+                                </div>
+                                <hr/>
+                                <p><strong>Users</strong></p>
+                            `;
+                                $(win.document.body).prepend(heading);
+                            },
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4]
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+    });
+
+
+</script>
+
+
+
+
+
+
+

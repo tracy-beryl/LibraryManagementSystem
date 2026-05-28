@@ -1,0 +1,40 @@
+﻿@model List<LibraryManagementSystem.Models.StudyProject>
+
+<h3 class="fw-bold">My Active Projects</h3>
+
+<div class="row mt-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="alert alert-info">
+                You are not part of any projects yet.
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var project in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@project.ProjectName</h5>
+                        <p class="card-text text-muted">
+                            @project.Description
+                        </p>
+
+                        <a asp-action="Project"
+                           asp-route-id="@project.Id"
+                           class="btn btn-primary btn-sm">
+                            Open Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<a asp-action="Create" class="btn btn-success mt-3">
+    + Create New Project
+</a>

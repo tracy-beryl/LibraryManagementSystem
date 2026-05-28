@@ -1,43 +1,127 @@
-﻿@model IEnumerable<LibraryManagementSystem.Models.PastPapers>
+﻿@using Microsoft.AspNetCore.Identity
+@using LibraryManagementSystem.Models
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user
+@model IEnumerable<LibraryManagementSystem.Models.PastPapers>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
-     <div class="container-md" style="margin-right:7px">
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
-        <h2>Uploaded Past Papers</h2>
-        <a asp-action="Create" asp-controller="PastPapers">Create</a>
+    var loggedIdUser = await user.GetUserAsync(User);
+    var isAdmin = false;
+    var isLibrarian = false;
+    var isLecturer = false;
+    var isStudent = false;
 
-        <table id="example" class="table table-bordered table-striped">
-            <thead>
+    if (loggedIdUser != null)
+    {
+        isAdmin = await user.IsInRoleAsync(loggedIdUser, "Admin");
+        isLibrarian = await user.IsInRoleAsync(loggedIdUser, "Librarian");
+        isLecturer = await user.IsInRoleAsync(loggedIdUser, "Lecturer");
+        isStudent = await user.IsInRoleAsync(loggedIdUser, "Student");
+    }
+
+    var canManage = isAdmin || isLibrarian;
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["SkippedReasons"] != null)
+{
+    <div class="alert alert-warning">
+        <strong>Some rows were skipped:</strong><br />
+        @TempData["SkippedReasons"]
+    </div>
+}
+
+
+<div class="container-fluid py-4">
+    <h2>Uploaded Past Papers</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form method="get" asp-action="PastPapers" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by course code, title, year, semester" />
+        </div>
+
+        <div class="col-md-3">
+            <select name="category" class="form-control">
+                <option value="">-- All Categories --</option>
+                <option value="ResearchPaper" selected="@(ViewBag.SelectedCategory == "ResearchPaper")">Research Papers</option>
+                <option value="KNEC" selected="@(ViewBag.SelectedCategory == "KNEC")">KNEC</option>
+                <option value="KASNEB" selected="@(ViewBag.SelectedCategory == "KASNEB")">KASNEB</option>
+                <option value="CDACC" selected="@(ViewBag.SelectedCategory == "CDACC")">CDACC</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-dark w-100">Filter</button>
+        </div>
+
+        @if (canManage)
+        {
+            <div class="col-md-3 text-md-end">
+                <a class="btn btn-dark me-2" asp-action="Create" asp-controller="PastPapers">Upload One</a>
+                <a class="btn btn-secondary" asp-action="Import" asp-controller="PastPapers">Import Many</a>
+            </div>
+        }
+    </form>
+
+    <div class="table-responsive">
+        <table id="example" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
                 <tr>
+                    <th>No</th>
                     <th>Course Code</th>
                     <th>Course Title</th>
                     <th>Academic Year</th>
                     <th>Semester</th>
-                    <th>Uploaded By</th>
+                    <th>Category</th>
+                    @if (canManage)
+                    {
+                        <th>Uploaded By</th>
+                    }
                     <th>View</th>
                 </tr>
             </thead>
             <tbody>
+                @{
+                    int count = 1;
+                }
                 @foreach (var paper in Model)
                 {
                     <tr>
+                        <td>@count</td>
                         <td>@paper.CourseCode</td>
                         <td>@paper.CourseTitle</td>
                         <td>@paper.AcademicYear</td>
                         <td>@paper.Semester</td>
-                        <td>@paper.UploadedBy</td>
-                        <td><a href="@paper.FilePath" target="_blank">View</a></td>
+                        <td>@paper.Category</td>
+                        @if (canManage)
+                        {
+                            <td>@paper.UploadedBy</td>
+                        }
+                        <td>
+                            <a href="@paper.FilePath" target="_blank" class="btn btn-sm btn-outline-dark">View</a>
+                        </td>
                     </tr>
+                    count++;
                 }
             </tbody>
         </table>
-    </div> 
+    </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+@section Scripts {
     <script>
-    new DataTable('#example');
+        new DataTable('#example');
     </script>
+}
+
+

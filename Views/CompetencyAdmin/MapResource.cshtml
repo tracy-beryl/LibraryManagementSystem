@@ -1,0 +1,23 @@
+﻿@model  LibraryManagementSystem.ViewModels.MapResourceViewModel
+
+<h2>Map Resource: @Model.Resource.Title</h2>
+
+<form asp-action="MapResource" method="post">
+    <input type="hidden" name="resourceId" value="@Model.Resource.Id" />
+
+    @foreach (var s in Model.Standards)
+    {
+        <div>
+            <input type="checkbox"
+                   name="selectedStandards"
+                   value="@s.Id"
+                   @(Model.SelectedStandards.Contains(s.Id) ? "checked" : "") />
+
+            @s.Program - @s.Level - @s.UnitCode (@s.Semester)
+        </div>
+    }
+
+    <button type="submit" class="btn btn-success">
+        Save Mapping
+    </button>
+</form>

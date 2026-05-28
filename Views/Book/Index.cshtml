@@ -1,110 +1,211 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@model LibraryManagementSystem.ViewModels.BookViewModel;
+@inject LibraryManagementSystem.Service.MyService service;
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
+
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-@model LibraryManagementSystem.ViewModels.BookViewModel;
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css" />
+@{
+    var loggedIdUser = await user.GetUserAsync(User);
+    var isStudent = false;
+    var isLibrarian = false;
+    var isAdmin = false;
+    if (loggedIdUser != null)
+    {
+        isStudent = await service.IsStudent(loggedIdUser.Id);
+        isLibrarian = await user.IsInRoleAsync(loggedIdUser, "Librarian");
+        isAdmin = await user.IsInRoleAsync(loggedIdUser, "Admin");
 
-<div class="container-md" style="margin-right:7px">
-    <h2>Books List</h2>
+        var name = loggedIdUser.Email;
+    }
+}
 
-    <div class="container">
-        <div class="d-flex justify-content-end gap-2 mb-3">
-            <a asp-action="Create" asp-controller="Book">Create</a>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#borrowBooks">
-                Borrow
+<div class="container-fluid px-3">
+    <h2>Books</h2>
+    @if (isStudent)
+    {
+        <div class="d-flex justify-content-end mb-3">
+            <button type="button"
+                    class="btn btn-outline-dark btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#suggestBookModal">
+                Suggest a Book
             </button>
         </div>
-    </div>
+     }
+
+
+    @if (isLibrarian || isAdmin)
+    {
+        <div class="d-flex flex-wrap justify-content-end gap-2 mb-3">
+            <a asp-action="Create" asp-controller="Book" class="btn btn-outline-dark btn-sm">Create</a>
+            <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#borrowBooks">
+                Borrow
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#filterModal">
+                Filter Books
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="importBtn">
+                Import Books (Excel)
+            </button>
+
+            <input type="file" id="excelFileInput"
+                   accept=".xlsx,.xls"
+                   style="display:none;" />
+
+
+        </div>
+    }
 
 
 
-    <table id="example" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>ISBN</th>
-                <th>Total Copies</th>
-                <th>Available Copies</th>
-                <th>Category</th>
-                <th>PhotoPath</th>
-                <th>BorrowingDays</th>
-                <th colspan="2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Books != null)
-            {
-                foreach (var item in Model.Books)
+
+
+    <div class="table-responsive">
+        <table id="example" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Total Copies</th>
+                    <th>Available Copies</th>
+                    <th>Category</th>
+                    <th>Edition</th>
+                    <th>ShelfNumber</th>
+                    <th>Department</th>
+                    <th>Book Cover</th>
+                    <th>Borrowing Days</th>
+
+                    @if (!isStudent)
+                    {
+                        <th colspan="2">Actions</th>
+                    }
+                    else
+                    {
+                        <th>Action</th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 1;
+                }
+                @foreach (var item in Model.AllBooks)
                 {
                     <tr>
+                        <td>@count</td>
                         <td>@item.Title</td>
                         <td>@item.Author</td>
                         <td>@item.ISBN</td>
                         <td>@item.TotalCopies</td>
                         <td>@item.AvailableCopies</td>
                         <td>@item.Category</td>
+                        <td>@item.Edition</td>
+                        <td>@item.ShelfNumber</td>
+                        <td>@item.Department</td>
+                        
                         <td>
-                            <img src="/images/@item.PhotoPath" alt="Book Cover" style="max-width: 80px; max-height: 100px;" />
-                        </td>
+                            @{
+                                var imagePath = string.IsNullOrWhiteSpace(item.PhotoPath)
+                                    ? "/images/alt-image.jpg"
+                                    : (item.PhotoPath.StartsWith("/images/")
+                                        ? item.PhotoPath
+                                        : "/images/" + item.PhotoPath);
+                            }
 
+                            <img src="@imagePath"
+                                 alt="Book Cover"
+                                 class="img-fluid rounded"
+                                 style="max-height: 100px;"
+                                 onerror="this.onerror=null;this.src='/images/alt-image.jpg';" />
+                        </td>
+                        
+                        
                         <td>@item.BorrowingDays</td>
-                        <td>
-                            <button type="button"
-                                    class="btn btn-primary details-button"
-                                    data-toggle="modal"
-                                    data-target="#detailsModal"
-                                    data-id="@item.Id"
-                                    data-title="@item.Title"
-                                    data-author="@item.Author"
-                                    data-isbn="@item.ISBN"
-                                    data-totalcopies="@item.TotalCopies"
-                                    data-availablecopies="@item.AvailableCopies"
-                                    data-category="@item.Category"
-                                    data-borrowingdays="@item.BorrowingDays"
-                                    data-photopath="@item.PhotoPath">
-                                Details
-                            </button>
-                        </td>
+                        @if (isStudent)
+                        {
+                            <td>
+                                @if (item.AvailableCopies == 0)
+                                {
+                                <button type="button"
+                                        class="btn btn-warning btn-sm reserve-btn"
+                                        data-book-id="@item.Id">
+                                    Reserve
+                                </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Available</span>
+                                }
+                            </td>
+                        }
 
 
-                        <td>
-                            <button type="button"
-                                    class="btn btn-primary edit-button"
-                                    data-toggle="modal"
-                                    data-target="#editModal"
-                                    data-id="@item.Id"
-                                    data-title="@item.Title"
-                                    data-author="@item.Author"
-                                    data-isbn="@item.ISBN"
-                                    data-totalcopies="@item.TotalCopies"
-                                    data-availablecopies="@item.AvailableCopies"
-                                    data-category="@item.Category"
-                                    data-borrowingdays="@item.BorrowingDays"
-                                    data-photopath="@item.PhotoPath">
-                                Edit
-                            </button>
-
-                        </td>
+                        @if (!isStudent)
+                        {
+                            <td>
+                                <button type="button" class="btn btn-sm btn-dark details-button"
+                                        data-bs-toggle="modal" data-bs-target="#detailsModal"
+                                        data-id="@item.Id"
+                                        data-title="@item.Title"
+                                        data-author="@item.Author"
+                                        data-isbn="@item.ISBN"
+                                        data-totalcopies="@item.TotalCopies"
+                                        data-availablecopies="@item.AvailableCopies"
+                                        data-category="@item.Category"
+                                        data-edition="@item.Edition"
+                                        data-shelfnumber="@item.ShelfNumber"
+                                        data-department="@item.Department"
+                                        data-borrowingdays="@item.BorrowingDays"
+                                        data-photopath="@item.PhotoPath">
+                                    Details
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-dark edit-button"
+                                        data-bs-toggle="modal" data-bs-target="#editModal"
+                                        data-id="@item.Id"
+                                        data-title="@item.Title"
+                                        data-author="@item.Author"
+                                        data-isbn="@item.ISBN"
+                                        data-totalcopies="@item.TotalCopies"
+                                        data-availablecopies="@item.AvailableCopies"
+                                        data-category="@item.Category"
+                                        data-edition="@item.Edition"
+                                        data-shelfnumber="@item.ShelfNumber"
+                                        data-department="@item.Department"
+                                        data-borrowingdays="@item.BorrowingDays"
+                                        data-photopath="@item.PhotoPath">
+                                    Edit
+                                </button>
+                            </td>
+                        }
                     </tr>
+                    count++;
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
 
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
             <div class="modal-content">
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="detailsModalLabel">Book Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                 </div>
 
                 <div class="modal-body">
@@ -115,11 +216,18 @@
                         <tr><th>Total Copies</th><td id="detail-totalcopies"></td></tr>
                         <tr><th>Available Copies</th><td id="detail-availablecopies"></td></tr>
                         <tr><th>Category</th><td id="detail-category"></td></tr>
+                        <tr><th>Edition</th><td id="detail-edition"></td></tr>
+                        <tr><th>ShelfNumber</th><td id="detail-shelfnumber"></td></tr>
+                        <tr><th>Department</th><td id="detail-department"></td></tr>
                         <tr><th>Borrowing Days</th><td id="detail-borrowingdays"></td></tr>
                         <tr>
                             <th>Photo</th>
                             <td>
-                                <img id="detail-photo" src="/images/alt-image.jpg" alt="Book Image" style="max-width: 150px;" />
+                                <img id="detail-photo"
+                                     src="/images/alt-image.jpg"
+                                     alt="Book Image"
+                                     style="max-width: 150px;"
+                                     onerror="this.onerror=null;this.src='/images/alt-image.jpg';" />
                             </td>
                         </tr>
 
@@ -127,7 +235,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
                 </div>
 
             </div>
@@ -141,7 +250,8 @@
                 <form id="editForm" method="post" asp-action="Edit" asp-controller="Book" enctype="multipart/form-data">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editModalLabel">Edit Book</h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                     </div>
 
                     <div class="modal-body">
@@ -176,6 +286,21 @@
                             <label>Category</label>
                             <input class="form-control" name="Category" id="edit-category" />
                         </div>
+                        <div class="form-group">
+                            <label>Edition</label>
+                            <input class="form-control" name="Edition" id="edit-edition" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shelf Number</label>
+                            <input class="form-control" name="ShelfNumber" id="edit-shelfnumber" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input class="form-control" name="Department" id="edit-department" />
+                        </div>
+
 
                         <div class="form-group">
                             <label>Borrowing Days</label>
@@ -189,7 +314,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
                         <button type="submit" class="btn btn-success">Save changes</button>
                     </div>
                 </form>
@@ -208,59 +334,208 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Borrow Books</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <form asp-action="BorrowedBooks" asp-controller="Book" method="post">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="SelectedStudent">Student  </label>
-                        <select asp-for="StudentId" class="form-control">
-                            <option value="">Select Student </option>
-                            @foreach (var StudentId in Model.Users)
-
+                    <div class="mb-3">
+                        <label for="students" class="form-label">Student</label>
+                        <select asp-for="StudentId" class="form-select" id="students">
+                            <option value=""></option>
+                            @foreach (var student in Model.Users)
                             {
-                                <option value="@StudentId.Id">@StudentId.FullName </option>
+                                <option value="@student.Id">@student.FullName</option>
                             }
-
                         </select>
                     </div>
 
-                    <div class="dropdown">
-                        <label for="Booktitle"> Book Title </label>
-                        <select asp-for="BookId" class="form-control">
-                            <option value="">Select Book Title </option>
+                    <div class="mb-3">
+                        <label for="books" class="form-label">Books</label>
+                        <select asp-for="BookId" class="form-select" id="books">
+                            <option value=""></option>
                             @if (Model.Books != null)
                             {
-
-                                @foreach (var book in Model.Books)
-
+                                foreach (var book in Model.Books)
                                 {
                                     <option value="@book.Id">@book.Title</option>
                                 }
                             }
-
                         </select>
                     </div>
-
-
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark">Submit</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="filterModal" tabindex="-1"
+     aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+            <form method="get" asp-action="Filter" asp-controller="Book">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">
+                        Filter Books
+                    </h5>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- Department -->
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select name="department" class="form-select">
+                            <option value="">All Departments</option>
+                            <option value="Business & ICT">Business & ICT</option>
+                            <option value="Hospitality">Hospitality</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Applied Sciences">Applied Sciences</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Beverage">Food & Beverage</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Fisheries">Fisheries Technology</option>
+                            <option value="Computer Studies">Computer Studies </option>
+                            <option value="Human Resource Management">Human Resource Management</option>
+                            <option value="Sales & Marketing">Sales & Marketing</option>
+                            <option value="Library Science">Library Science</option>
+                            <option value="Nutrition & Dietetics">Nutrition & Dietetics </option>
+                            <option value="Civil">Civil</option>
+                            <option value="CPA">CPA</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <a asp-action="Filter" asp-controller="Book"
+                       class="btn btn-outline-secondary">
+                        Reset
+                    </a>
+                    <button type="submit" class="btn btn-dark">
+                        Apply Filters
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@if (isStudent)
+{
+    <div class="modal fade" id="suggestBookModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <form asp-action="SuggestBook"
+                      asp-controller="Book"
+                      method="post">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Suggest a Book</h5>
+                        <button type="button" class="btn-close"
+                                data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label class="form-label">Book Title</label>
+                            <input name="Title"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Author</label>
+                            <input name="Author"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">ISBN (optional)</label>
+                            <input name="ISBN"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Reason for suggestion</label>
+                            <textarea name="Reason"
+                                      class="form-control"
+                                      rows="3"
+                                      required></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-dark">
+                            Submit Suggestion
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
 <script>
-    new DataTable('#example');
+    $('#borrowBooks').on('shown.bs.modal', function () {
+        if (!$('#students').hasClass('select2-hidden-accessible')) {
+            $('#students').select2({
+                dropdownParent: $('#borrowBooks'),
+                width: '100%',
+                placeholder: 'Search student...',
+                allowClear: true
+            });
+        }
+
+        if (!$('#books').hasClass('select2-hidden-accessible')) {
+            $('#books').select2({
+                dropdownParent: $('#borrowBooks'),
+                width: '100%',
+                placeholder: 'Search book...',
+                allowClear: true
+            });
+        }
+    });
 </script>
+
+
+
+
+
 <script>
     $(document).ready(function () {
         $('.details-button').click(function () {
@@ -273,19 +548,102 @@
             $('#detail-availablecopies').text(button.data('availablecopies'));
             $('#detail-category').text(button.data('category'));
             $('#detail-borrowingdays').text(button.data('borrowingdays'));
+            $('#detail-edition').text(button.data('edition'));
+            $('#detail-shelfnumber').text(button.data('shelfnumber'));
+            $('#detail-department').text(button.data('department'));
 
             const photoPath = button.data('photopath');
+
             if (photoPath && photoPath.trim() !== "") {
-                $('#detail-photo').attr('src', '/images/' + photoPath);
+                const normalizedPath = photoPath.startsWith('/images/')
+                    ? photoPath
+                    : '/images/' + photoPath;
+
+                $('#detail-photo').attr('src', normalizedPath);
             } else {
                 $('#detail-photo').attr('src', '/images/alt-image.jpg');
             }
         });
+
+        $('#detail-photo').on('error', function () {
+            $(this).attr('src', '/images/alt-image.jpg');
+        });
     });
-
 </script>
+@if (isStudent)
+{
+    <script>
+        new DataTable('#example')
+    </script>
+}
 
 
+@if (!isStudent)
+{
+    <script>
+        $(document).ready(function () {
+            new DataTable('#example', {
+                layout: {
+                    topStart: {
+                        buttons: [
+                            {
+                                extend: 'copy',
+                                exportOptions: {
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                }
+                            },
+                            {
+                                extend: 'csv',
+                                exportOptions: {
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                }
+                            },
+                            {
+                                extend: 'excel',
+                                exportOptions: {
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                }
+                            },
+                            {
+                                extend: 'pdf',
+                                exportOptions: {
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                }
+                            },
+                            {
+                                extend: 'print',
+                                title: '',
+                                customize: function (win) {
+                                    const logoUrl = '/images/logo.png';
+                                    const institutionName = 'KCA University';
+                                    const heading = `
+                                                                    <div style="display: flex; justify-content: space-between;">
+                                                                        <img src="${logoUrl}" height="50" />
+                                                                        <div style="text-align: right;">
+                                                                            <strong>${institutionName}</strong><br/>
+                                                                            P.O. Box 56808, Nairobi<br/>
+                                                                            Tel: +254 20 8646103 / 8646108
+                                                                        </div>
+                                                                    </div>
+                                                                    <hr/>
+                                                                    <p><strong>Books Report</strong></p>
+                                                                `;
+                                    $(win.document.body).prepend(heading);
+                                },
+                                exportOptions: {
+                                    columns: [0, 1, 2, 3, 4, 5, 6, 8]
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+
+    </script>
+
+}
 <script>
     $(document).on('click', '.edit-button', function () {
         const button = $(this);
@@ -305,6 +663,90 @@
 
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document.querySelectorAll(".reserve-btn").forEach(button => {
+
+            button.addEventListener("click", function () {
+
+                const bookId = this.dataset.bookId;
+
+                fetch(`/Book/Reserve?bookId=${bookId}`, {
+                    method: "POST",
+                    headers: {
+                        "RequestVerificationToken":
+                            document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        Swal.fire({
+                            icon: data.success ? 'success' : 'info',
+                            title: data.success ? 'Reservation Status' : 'Notice',
+                            text: data.message,
+                            confirmButtonColor: '#212529'
+                        });
+
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.',
+                            confirmButtonColor: '#212529'
+                        });
+                    });
+
+            });
+
+        });
+
+    });
+</script>
+
+
+
+<script>
+    document.getElementById('importBtn').addEventListener('click', function () {
+        document.getElementById('excelFileInput').click();
+    });
+
+    document.getElementById('excelFileInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch('/Book/ImportExcel', {
+            method: 'POST',
+            body: formData
+        })
+            .then(async response => {
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch {
+                    throw new Error(text);
+                }
+            })
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert(error.message);
+            });
+
+    });
+</script>
+
+}
 
 
 

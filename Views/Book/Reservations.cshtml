@@ -1,0 +1,39 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.BookReservation>
+
+@{
+    ViewData["Title"] = "Book Reservations";
+}
+
+<h3 class="mb-4">Book Reservations</h3>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Book</th>
+            <th>Student</th>
+            <th>Reserved On</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr class="@(r.IsFulfilled ? "table-success" : "")">
+                <td>@r.Book.Title</td>
+                <td>@r.User.FullName</td>
+                <td>@r.ReservedOn.ToString("dd MMM yyyy")</td>
+                <td>
+                    @if (r.IsFulfilled)
+                    {
+                        <span class="badge bg-success">Fulfilled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Waiting</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

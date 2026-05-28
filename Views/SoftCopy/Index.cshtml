@@ -1,0 +1,58 @@
+﻿@model List<LibraryManagementSystem.Models.SoftCopy>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
+@inject LibraryManagementSystem.Service.MyService service;
+
+@{
+    var loggedIdUser = await user.GetUserAsync(User);
+    var isStudent = false;
+    if (loggedIdUser != null)
+    {
+        isStudent = await service.IsStudent(loggedIdUser.Id);
+    }
+}
+<div class="container-fluid px-3">
+    <h3> Soft Copies</h3>
+    @if (!isStudent)
+    {
+        <a asp-action="Upload" class="btn btn-dark">Upload</a>
+    }
+
+    <div class="table-responsive">
+        <table id="example" class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Upload Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 1;
+                }
+                @foreach (var file in Model)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>@file.Title</td>
+                        <td>@file.Description</td>
+                        <td>@file.UploadDate.ToShortDateString()</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-dark" href="@file.FilePath" target="_blank">Download</a>
+                        </td>
+                    </tr>
+
+                    count++;
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    new DataTable('#example');
+</script>

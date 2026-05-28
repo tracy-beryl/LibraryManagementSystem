@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LibraryManagementSystem.Models;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagementSystem.ViewModels
@@ -17,7 +18,10 @@ namespace LibraryManagementSystem.ViewModels
         [Required]
         public string Semester { get; set; }
 
-        public IFormFile File { get; set; } 
+        [Required]
+        public PastPaperCategory Category { get; set; }
+
+        [Required]
+        public IFormFile File { get; set; }
     }
 }
-

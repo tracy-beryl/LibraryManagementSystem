@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\USER\\Desktop\\Development\\LibraryManagementSystem\\LibraryManagementSystem.csproj": {}
+    "C:\\Users\\USER\\source\\repos\\LibraryManagementSystem\\LibraryManagementSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\USER\\Desktop\\Development\\LibraryManagementSystem\\LibraryManagementSystem.csproj": {
+    "C:\\Users\\USER\\source\\repos\\LibraryManagementSystem\\LibraryManagementSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\USER\\Desktop\\Development\\LibraryManagementSystem\\LibraryManagementSystem.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\source\\repos\\LibraryManagementSystem\\LibraryManagementSystem.csproj",
         "projectName": "LibraryManagementSystem",
-        "projectPath": "C:\\Users\\USER\\Desktop\\Development\\LibraryManagementSystem\\LibraryManagementSystem.csproj",
+        "projectPath": "C:\\Users\\USER\\source\\repos\\LibraryManagementSystem\\LibraryManagementSystem.csproj",
         "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\USER\\Desktop\\Development\\LibraryManagementSystem\\obj\\",
+        "outputPath": "C:\\Users\\USER\\source\\repos\\LibraryManagementSystem\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,14 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "dependencies": {
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.105.0, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[3.1.32, )"
@@ -71,6 +79,14 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[3.1.5, )"
+            },
+            "itext.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.4.0, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[9.4.0, )"
             }
           },
           "imports": [

@@ -1,0 +1,69 @@
+﻿@model List<LibraryManagementSystem.Models.LecturerUnitAssignment>
+
+@{
+    ViewData["Title"] = "Lecturer Assignments";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lecturer Assignments</h2>
+        <a asp-action="Create" class="btn btn-dark">Assign Lecturer</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Lecturer</th>
+                    <th>Program</th>
+                    <th>Level</th>
+                    <th>Semester</th>
+                    <th>Unit Code</th>
+                    <th>Unit Name</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(item.LecturerUser?.FullName ?? item.LecturerUser?.Email)</td>
+                        <td>@item.Program</td>
+                        <td>@item.Level</td>
+                        <td>@item.Semester</td>
+                        <td>@item.UnitCode</td>
+                        <td>@item.UnitName</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <form asp-action="Deactivate" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Deactivate
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

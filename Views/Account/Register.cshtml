@@ -1,61 +1,65 @@
-﻿@model LibraryManagementSystem.ViewModels.RegisterViewModel
+﻿@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity
+@model LibraryManagementSystem.ViewModels.RegisterViewModel
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
 
 @{
     ViewData["Title"] = "Register";
 }
 
-<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+<div class="d-flex align-items-center justify-content-center px-3" style="min-height: 100vh; background-color: #f8f9fa;">
     <div class="row justify-content-center w-100">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="text-center">Create a New Account</h2>
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h3 class="mb-0">Create a New Account</h3>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Register" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card-body bg-white">
+                    <form asp-action="Register" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="form-group">
-                            <label asp-for="FullName" class="control-label"></label>
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-semibold"></label>
                             <input asp-for="FullName" class="form-control" />
-                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Email" class="control-label"></label>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
                             <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="IdentificationNumber" class="control-label"></label>
-                            <input asp-for="IdentificationNumber" class="form-control" />
-                            <span asp-validation-for="IdentificationNumber" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="AdmissionNumber" class="form-label fw-semibold"></label>
+                            <input asp-for="AdmissionNumber" class="form-control" />
+                            <span asp-validation-for="AdmissionNumber" class="text-danger small"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Password" class="control-label"></label>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-semibold"></label>
                             <input asp-for="Password" class="form-control" type="password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="ConfirmPassword" class="control-label"></label>
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
                             <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                         </div>
 
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark">Register</button>
                         </div>
                     </form>
                 </div>
-                <div class="card-footer text-center">
-                    <p>Already have an account? <a asp-action="Login">Login here</a></p>
+                <div class="card-footer text-center bg-light">
+                    <p class="mb-0">Already have an account? <a asp-action="Login" class="text-decoration-none fw-semibold text-dark">Login here</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-

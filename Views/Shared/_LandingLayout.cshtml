@@ -1,197 +1,89 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using LibraryManagementSystem.Models;
-@inject SignInManager<LibraryManagementSystem.Models.ApplicationUser> signInManager;
-@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> user;
-
-@{
-    var loggedIdUser = await user.GetUserAsync(User);
-}
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
-<style>
-    .sidenav {
-        height: 100%;
-        width: 250px;
-        position: fixed;
-        top: 83px;
-        left: 0;
-        background-color: #f1f1f2;
-        padding-top: 20px;
-        z-index: 1;
-    }
-
-        .sidenav a {
-            padding: 10px 20px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-            transition: 0.3s;
-        }
-
-            .sidenav a:hover {
-                background-color: #ddd;
-                color: #000;
-            }
-
-    .main {
-        margin-left: 250px;
-        margin-top: 100px;
-    }
-
-
-    .dashboard-content {
-        margin-left: 250px;
-        padding-top: 100px;
-    }
-</style>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - LibraryManagementSystem</title>
-    <environment include="Development">
-        <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
 
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/jquery-validate/jquery.validate.js"></script>
-        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-    </environment>
+   
 
-    <environment exclude="Development">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
-              crossorigin="anonymous"
-              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position"
-              asp-fallback-test-value="absolute"
-              asp-suppress-fallback-integrity="true" />
-    </environment>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     @RenderSection("Styles", required: false)
 </head>
-<body>
-    <header class="fixed-top">
-        <nav class="navbar navbar-dark bg-body-secondary">
-            <ul class="d-flex align-items-center" style="list-style:none;">
 
-                <li><a href="#"><strong>Home</strong></a></li>
-                <li><a asp-controller="home" asp-action="about">About</a></li>
-                <li><a asp-controller="book" asp-action="index">Books</a></li>
-                <li><a href="">Services</a></li>
-                <li style="margin-left:1000px;"><a asp-controller="account" asp-action="register">Sign-Up</a></li>
-                <li style="margin-right:900px;"><a asp-controller="account" asp-action="login">Login</a></li>
-            </ul>
+<body class="bg-light">
+    <div class="container py-4">
+        @RenderBody()
+    </div>
 
-        </nav>
-
-    </header>
-    <section>
-        <div class="container-md" style="margin-top:3px;">
-            <img class="img-fluid" src="~/images/image.jpg" alt="">
-        </div>
-        <div class=" row container-fluid py-5">
-            <div class="container pt-5 pb-3">
-                <div class="text-center mb-5">
-                    <h5 class="text-primary text-uppercase mb-3" style="letter-spacing: 5px;">Librarians</h5>
-                    <h1>Meet Our Librarians</h1>
+    <!-- FOOTER -->
+    <footer class="bg-dark text-light pt-5 pb-4">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <!-- Contact Info -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold text-warning">📞 Contact Us</h5>
+                    <p><strong>Address:</strong> Ojijo Street, Westlands, Nairobi</p>
+                    <p><strong>Phone:</strong> +254 712 345 678</p>
+                    <p><strong>Email:</strong> <a href="mailto:betalibrary@ac.ke" class="text-warning text-decoration-none">betalibrary@ac.ke</a></p>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 col-lg-3 text-center team mb-4">
-                        <div class="team-item rounded overflow-hidden mb-2">
-                            <div class="team-img position-relative">
-                                <img class="img-fluid" src="~/images/librarian.jpeg" alt="">
 
-                            </div>
-                            <div class="bg-secondary p-4">
-                                <h5>Claris Bond</h5>
-                                <p class="m-0">Library Manager</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 text-center team mb-4">
-                        <div class="team-item rounded overflow-hidden mb-2">
-                            <div class="team-img position-relative">
-                                <img class="img-fluid" src="~/images/man.jpg" alt="">
+                <!-- Quick Links -->
+                <div class="col-md-2 mb-4">
+                    <h5 class="fw-bold text-warning">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><span><a asp-controller="Home" asp-action="Index" class="text-light text-decoration-none">Home</a></span></li>
+                        <li><span><a asp-controller="Home" asp-action="About" class="text-light text-decoration-none">About</a></span></li>
+                        <li><span><a asp-controller="Book" asp-action="Index" class="text-light text-decoration-none">Books</a></span></li>
+                        <li><span><a asp-controller="Account" asp-action="Login" class="text-light text-decoration-none">Login</a></span></li>
+                    </ul>
+                </div>
 
-                            </div>
-                            <div class="bg-secondary p-4">
-                                <h5>John Doe</h5>
-                                <p class="m-0">Library Assistant </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 text-center team mb-4">
-                        <div class="team-item rounded overflow-hidden mb-2">
-                            <div class="team-img position-relative">
-                                <img class="img-fluid" src="~/images/woman.jpg" alt="">
+                <!-- Services -->
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold text-warning">Library Services</h5>
+                    <ul class="list-unstyled">
+                        <li><span>📔 Book Borrowing</span></li>
+                        <li><span>📄 Access to Past Papers</span></li>
+                        <li><span>🧑‍💻 Study & IT Support</span></li>
+                        <li><span>✍️ Reading & Research</span></li>
+                    </ul>
+                </div>
 
-                            </div>
-                            <div class="bg-secondary p-4">
-                                <h5>Emily Harris</h5>
-                                <p class="m-0"> Librarian </p>
-                            </div>
+                <!-- Newsletter (Placeholder) -->
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold text-warning">Stay Updated</h5>
+                    <p>Subscribe to our newsletter for updates and resources.</p>
+                    <form>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Your email" disabled>
+                            <button class="btn btn-warning" type="button" disabled>Subscribe</button>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 text-center team mb-4">
-                        <div class="team-item rounded overflow-hidden mb-2">
-                            <div class="team-img position-relative">
-                                <img class="img-fluid" src="~/images/manager.jpeg" alt="">
-
-                            </div>
-                            <div class="bg-secondary p-4">
-                                <h5>Kevin Hatz</h5>
-                                <p class="m-0">IT Support </p>
-                            </div>
-                        </div>
-                    </div>
+                        <small class="text-muted">Coming Soon</small>
+                    </form>
                 </div>
             </div>
-        </div>
 
-    </section>
-    <footer class="bg-secondary">
-        <div class="row">
-            <div class="col-lg-3 text-right">
-                <div class="d-inline-flex align-items-center">
+            <hr class="border-top border-light my-3" />
 
-                    <div class="text-left">
-                        <h6 class="font-weight-bold mb-1">Our Office</h6>
-                        <small>Ojijo Street, Westland, Nairobi</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 text-right">
-                <div class="d-inline-flex align-items-center">
-
-                    <div class="text-left">
-                        <h6 class="font-weight-bold mb-1">Email Us</h6>
-                        <small>betalibrary@ac.ke</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 text-right">
-                <div class="d-inline-flex align-items-center">
-
-                    <div class="text-right">
-                        <h6 class="font-weight-bold mb-1">Call Us</h6>
-                        <small>0789675423</small>
-                    </div>
+            <!-- Copyright -->
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0 small">
+                        © @DateTime.Now.Year Beta Library. All Rights Reserved. |
+                        <a href="#" class="text-warning text-decoration-none">Privacy Policy</a> |
+                        <a href="#" class="text-warning text-decoration-none">Terms of Use</a>
+                    </p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <div>
-        @RenderBody()
-    </div>
+
+
 
 
     @RenderSection("Scripts", required: false)
-
-
-
 </body>
 </html>

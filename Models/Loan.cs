@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Models
 {
@@ -22,8 +19,23 @@ namespace LibraryManagementSystem.Models
         public DateTime LoanDate { get; set; } = DateTime.Now;
 
         [Required]
-        public DateTime DueDate { get; set; } = DateTime.Now.AddDays(2);
+        public DateTime DueDate { get; set; } = DateTime.Now;
 
         public DateTime? ReturnDate { get; set; }
+
+        public LoanStatus Status { get; set; } = LoanStatus.Borrowed;
+
+        public decimal? FrozenFineAmount { get; set; }
+        public decimal? ReplacementCost { get; set; }
+
+        public FinePaymentStatus FinePaymentStatus { get; set; } = FinePaymentStatus.None;
+        public decimal FineAmountPaid { get; set; } = 0;
+        public DateTime? FinePaidOn { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
+
+        public bool MpesaPaymentPending { get; set; } = false;
+        public string CheckoutRequestId { get; set; }
+        public string MpesaReceiptNumber { get; set; }
+        public string TransactionReference { get; set; }
     }
 }

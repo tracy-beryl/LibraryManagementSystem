@@ -1,0 +1,28 @@
+﻿@model List<ProjectInvitation>
+
+<h4>Project Invitations</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Sent</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invite in Model)
+        {
+            <tr>
+                <td>@invite.Student.FullName</td>
+                <td>
+                    <span class="badge bg-secondary">
+                        @invite.Status
+                    </span>
+                </td>
+                <td>@invite.SentAt.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

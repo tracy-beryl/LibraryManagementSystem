@@ -19,42 +19,6 @@ namespace LibraryManagementSystem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("LibraryManagementSystem.Models.Admin", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AdminName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admin");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AdminName = "John Doe",
-                            Email = "johndoe@gmail.com"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AdminName = "Emily Harris",
-                            Email = "emilyharris@gmail.com"
-                        });
-                });
-
             modelBuilder.Entity("LibraryManagementSystem.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -66,6 +30,9 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -79,6 +46,12 @@ namespace LibraryManagementSystem.Migrations
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -109,9 +82,6 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -134,37 +104,22 @@ namespace LibraryManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "A1",
+                            Id = "8b8b820f-bf84-4ffe-87bd-be619179d833",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b5947e00-85fa-4e19-ba88-f0bd05a97ed8",
+                            ConcurrencyStamp = "56ba0601-4b1f-4a09-b738-18c20f1b89cb",
+                            CreatedAt = new DateTime(2026, 4, 1, 10, 57, 28, 504, DateTimeKind.Local).AddTicks(3469),
                             Email = "johndoe@gmail.com",
                             EmailConfirmed = true,
                             FullName = "John Doe",
+                            IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHNDOE@GMAIL.COM",
                             NormalizedUserName = "JOHNDOE@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDL3ztn5b6XcgI4dEbZWZ1T1K97BUC88Ow6Fh8foydoJiZsFLnwt2gJ2mNp09NdxUQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBDgdYw3PP5OtNj1Eza3sCxdOHBHfyXRqil2qHp8M1Z+GYYMRuOCMnC+uu7VpMJXMA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ca11c6f5-1a03-495b-9a46-6e55aeeb269a",
+                            SecurityStamp = "9d39587f-3a5d-46da-a173-8125f36baaf5",
                             TwoFactorEnabled = false,
                             UserName = "johndoe@gmail.com"
-                        },
-                        new
-                        {
-                            Id = "S1",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "741133fd-1969-4aba-9ae6-65401e38b1fb",
-                            Email = "moyimeso@gmail.com",
-                            EmailConfirmed = true,
-                            FullName = "Moyi Meso",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "MOYIMESO@GMAIL.COM",
-                            NormalizedUserName = "MOYIMESO@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECTc14J6i9MLYC/ADMNNJh2/vwvegmzpXD8Oq1tAtqFlM0+hLuA4bZ4V61erfUzbxw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "e02d367e-dd38-427f-9723-6cb6ee99299a",
-                            TwoFactorEnabled = false,
-                            UserName = "moyimeso@gmail.com"
                         });
                 });
 
@@ -189,11 +144,27 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Edition")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ISBN")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsBorrowable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PhotoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShelfNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -205,7 +176,352 @@ namespace LibraryManagementSystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ISBN", "Edition", "Department")
+                        .IsUnique()
+                        .HasFilter("[Edition] IS NOT NULL AND [Department] IS NOT NULL");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFulfilled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNotified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ReservedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BookReservations");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookSuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SuggestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SuggestedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SuggestedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SuggestedByUserId");
+
+                    b.ToTable("BookSuggestions");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.CDACC.CompetencyStandard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Program")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnitName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompetencyStandards");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.CDACC.LibraryResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Author")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DurationSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ISBN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UrlOrFilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LibraryResources");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.CDACC.ResourceCompetency", b =>
+                {
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompetencyStandardId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MappedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MappedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("ProjectResourceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ResourceId", "CompetencyStandardId");
+
+                    b.HasIndex("CompetencyStandardId");
+
+                    b.HasIndex("MappedByUserId");
+
+                    b.HasIndex("ProjectResourceId");
+
+                    b.ToTable("ResourceCompetencies");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.DamageReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuantityAffected")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReportType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReportedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("ReportedByUserId");
+
+                    b.ToTable("DamageReports");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.InventoryRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AvailableCopies")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DamagedCopies")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastUpdatedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("MissingCopies")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReorderThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCopies")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId")
+                        .IsUnique();
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.ToTable("InventoryRecords");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.InventoryTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InventoryRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NewAvailableCopies")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PerformedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PreviousAvailableCopies")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityChanged")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryRecordId");
+
+                    b.HasIndex("PerformedByUserId");
+
+                    b.ToTable("InventoryTransactions");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.LecturerUnitAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LecturerUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Program")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnitName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LecturerUserId");
+
+                    b.ToTable("LecturerUnitAssignments");
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Models.Loan", b =>
@@ -218,14 +534,50 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CheckoutRequestId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("FineAmountPaid")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("FinePaidOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FinePaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("FrozenFineAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("LoanDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("MpesaPaymentPending")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MpesaReceiptNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ReplacementCost")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -235,9 +587,46 @@ namespace LibraryManagementSystem.Migrations
 
                     b.HasIndex("BookId");
 
+                    b.HasIndex("StudentProfileId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Loans");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.PastPaperAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChallengingQuestions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConfidenceRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DifficultyRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FeedbackNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentProfileId");
+
+                    b.ToTable("PastPaperAttempts");
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Models.PastPapers", b =>
@@ -251,6 +640,9 @@ namespace LibraryManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
                     b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -259,7 +651,13 @@ namespace LibraryManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FileHash")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Semester")
@@ -278,7 +676,261 @@ namespace LibraryManagementSystem.Migrations
                     b.ToTable("PastPapers");
                 });
 
-            modelBuilder.Entity("LibraryManagementSystem.Models.Staff", b =>
+            modelBuilder.Entity("LibraryManagementSystem.Models.PaymentReceipt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CheckoutRequestId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LoanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Method")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PaidOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LoanId");
+
+                    b.ToTable("PaymentReceipts");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectDeadline", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectDeadlines");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectInvitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("ProjectInvitations");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("LastReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("ProjectMembers");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ProjectMessages");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UploadedById")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectResources");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ResourceView", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ProjectResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ViewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectResourceId");
+
+                    b.ToTable("ResourceViews");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Settings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("LogoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.SoftCopy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SoftCopies");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StaffProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -288,35 +940,117 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("Department")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("StaffNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("StaffProfiles");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudentProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AdmissionNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StaffName")
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Program")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("StudentProfiles");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudentResourceProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("PageCoveragePercent")
+                        .HasColumnType("float");
+
+                    b.Property<int>("QuizScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TimeSpentSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("WatchSeconds")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceId");
+
+                    b.HasIndex("StudentProfileId");
+
+                    b.ToTable("StudentResourceProgresses");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudyProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Staff");
+                    b.HasIndex("OwnerId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Department = "Software Systems",
-                            Email = "moyimeso@gmail.com",
-                            StaffName = "Moyi Meso"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Department = "Information Systems",
-                            Email = "leahkateb@gmail.com",
-                            StaffName = "Leah Kateb"
-                        });
+                    b.ToTable("StudyProjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -344,29 +1078,6 @@ namespace LibraryManagementSystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            ConcurrencyStamp = "b8d4cea2-1103-4c45-858a-f0d1a1801e7f",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            ConcurrencyStamp = "69b2cef6-b382-4a93-b8ec-f9d36eca069a",
-                            Name = "Staff",
-                            NormalizedName = "STAFF"
-                        },
-                        new
-                        {
-                            Id = "3",
-                            ConcurrencyStamp = "085197f3-a890-4010-b8ce-cf8c669699e8",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -452,18 +1163,6 @@ namespace LibraryManagementSystem.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "A1",
-                            RoleId = "1"
-                        },
-                        new
-                        {
-                            UserId = "S1",
-                            RoleId = "2"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -485,6 +1184,99 @@ namespace LibraryManagementSystem.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookReservation", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookSuggestion", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "SuggestedBy")
+                        .WithMany()
+                        .HasForeignKey("SuggestedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.CDACC.ResourceCompetency", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.CDACC.CompetencyStandard", "CompetencyStandard")
+                        .WithMany("ResourceCompetencies")
+                        .HasForeignKey("CompetencyStandardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "MappedByUser")
+                        .WithMany()
+                        .HasForeignKey("MappedByUserId");
+
+                    b.HasOne("LibraryManagementSystem.Models.ProjectResource", null)
+                        .WithMany("ResourceCompetencies")
+                        .HasForeignKey("ProjectResourceId");
+
+                    b.HasOne("LibraryManagementSystem.Models.CDACC.LibraryResource", "Resource")
+                        .WithMany("ResourceCompetencies")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.DamageReport", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Book", "Book")
+                        .WithMany("DamageReports")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "ReportedByUser")
+                        .WithMany("DamageReports")
+                        .HasForeignKey("ReportedByUserId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.InventoryRecord", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Book", "Book")
+                        .WithOne("InventoryRecord")
+                        .HasForeignKey("LibraryManagementSystem.Models.InventoryRecord", "BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "LastUpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedByUserId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.InventoryTransaction", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.InventoryRecord", "InventoryRecord")
+                        .WithMany()
+                        .HasForeignKey("InventoryRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "PerformedByUser")
+                        .WithMany("InventoryTransactions")
+                        .HasForeignKey("PerformedByUserId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.LecturerUnitAssignment", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "LecturerUser")
+                        .WithMany()
+                        .HasForeignKey("LecturerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LibraryManagementSystem.Models.Loan", b =>
                 {
                     b.HasOne("LibraryManagementSystem.Models.Book", "Book")
@@ -493,11 +1285,135 @@ namespace LibraryManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LibraryManagementSystem.Models.StudentProfile", null)
+                        .WithMany("Loans")
+                        .HasForeignKey("StudentProfileId");
+
                     b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "User")
                         .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.PastPaperAttempt", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudentProfile", "StudentProfile")
+                        .WithMany()
+                        .HasForeignKey("StudentProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.PaymentReceipt", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Loan", "Loan")
+                        .WithMany()
+                        .HasForeignKey("LoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectDeadline", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudyProject", "Project")
+                        .WithMany("ProjectDeadlines")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectInvitation", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudyProject", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectMember", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudyProject", "Project")
+                        .WithMany("ProjectMembers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectMessage", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudyProject", "Project")
+                        .WithMany("ProjectMessages")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ProjectResource", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.StudyProject", "Project")
+                        .WithMany("ProjectResources")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.ResourceView", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ProjectResource", null)
+                        .WithMany("Views")
+                        .HasForeignKey("ProjectResourceId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StaffProfile", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "User")
+                        .WithOne("StaffProfile")
+                        .HasForeignKey("LibraryManagementSystem.Models.StaffProfile", "UserId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudentProfile", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "User")
+                        .WithOne("StudentProfile")
+                        .HasForeignKey("LibraryManagementSystem.Models.StudentProfile", "UserId");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudentResourceProgress", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.CDACC.LibraryResource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.StudentProfile", "StudentProfile")
+                        .WithMany()
+                        .HasForeignKey("StudentProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.StudyProject", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

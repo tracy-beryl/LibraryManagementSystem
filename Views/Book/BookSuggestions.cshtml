@@ -1,0 +1,81 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.BookSuggestion>
+
+@{
+    ViewData["Title"] = "Book Suggestions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h3 class="mb-4">Student Book Suggestions</h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Suggested By</th>
+                    <th>Status</th>
+                    <th style="width: 180px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@s.Title</td>
+                            <td>@s.Author</td>
+                            <td>@s.SuggestedBy?.FullName</td>
+                            <td>
+                                @if (s.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!s.Approved)
+                                {
+                                    <a asp-action="ApproveSuggestion"
+                                       asp-route-id="@s.Id"
+                                       class="btn btn-sm btn-primary">
+                                        Approve & Add
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No action</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No book suggestions found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

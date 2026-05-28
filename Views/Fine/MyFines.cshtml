@@ -1,0 +1,114 @@
+﻿@model List<LibraryManagementSystem.ViewModels.FineViewModel>
+@using LibraryManagementSystem.Models
+
+@{
+    ViewData["Title"] = "My Fines";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <h2>My Fines</h2>
+
+    <div class="table-responsive">
+        <table id="fineTable" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Book</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th>Days Late</th>
+                    <th>Fine Amount (KES)</th>
+                    <th>Loan Status</th>
+                    <th>Payment Status</th>
+                    <th>Payment Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 1;
+                }
+
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var fine in Model)
+                    {
+                        <tr class="@(fine.FinePaymentStatus == FinePaymentStatus.Unpaid ? "table-danger" : "")">
+                            <td>@count</td>
+                            <td>@(string.IsNullOrWhiteSpace(fine.BookTitle) ? "-" : fine.BookTitle)</td>
+                            <td>@fine.DueDate.ToShortDateString()</td>
+                            <td>@(fine.ReturnDate.HasValue ? fine.ReturnDate.Value.ToShortDateString() : "-")</td>
+                            <td>@fine.DaysLate</td>
+                            <td>@fine.FineAmount.ToString("N2")</td>
+
+                            <td>
+                                @if (fine.Status == LoanStatus.Returned)
+                                {
+                                    <span class="badge bg-info text-dark">Returned</span>
+                                }
+                                else if (fine.Status == LoanStatus.Lost)
+                                {
+                                    <span class="badge bg-danger">Lost</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Borrowed</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (fine.FinePaymentStatus == FinePaymentStatus.Paid)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending M-Pesa</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Reversed)
+                                {
+                                    <span class="badge bg-dark">Reversed</span>
+                                }
+                                else if (fine.FinePaymentStatus == FinePaymentStatus.Unpaid)
+                                {
+                                    <span class="badge bg-danger">Unpaid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">None</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (fine.PaymentMethod == PaymentMethod.Cash)
+                                {
+                                    <span class="badge bg-primary">Cash</span>
+                                }
+                                else if (fine.PaymentMethod == PaymentMethod.Mpesa)
+                                {
+                                    <span class="badge bg-success">M-Pesa</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+                        </tr>
+
+                        count++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        new DataTable('#fineTable', {
+            language: {
+                emptyTable: "No fines found."
+            }
+        });
+    </script>
+}

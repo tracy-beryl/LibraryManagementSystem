@@ -1,0 +1,188 @@
+﻿@model LibraryManagementSystem.ViewModels.LearningPathViewModel
+@{
+    ViewData["Title"] = "My Learning Path";
+    var completed = Model.CompletedResourceIds;
+}
+
+<div class="container-fluid py-4 bg-dark min-vh-100">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">My Learning Path</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item text-muted">@Model.Program</li>
+                    <li class="breadcrumb-item active text-primary">Level @Model.Level</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="PastPaperHistory" class="btn btn-outline-info">
+                Past Paper History
+            </a>
+            <label for="semesterFilter" class="text-muted small d-none d-md-block">Filter By:</label>
+            <select id="semesterFilter" class="form-select bg-dark text-light border-secondary" style="width:200px;">
+                <option value="">All Semesters</option>
+                @for (int i = 1; i <= 3; i++)
+                {
+                    <option value="@i" selected="@(Context.Request.Query["semester"] == i.ToString())">Semester @i</option>
+                }
+            </select>
+        </div>
+    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {<div class="alert alert-success"> @TempData["SuccessMessage"] </div>}
+
+    <!-- Units -->
+    <div class="row g-4">
+        @foreach (var unit in Model.Units)
+        {
+            <div class="col-xl-6">
+                <div class="card bg-dark border-secondary shadow-sm h-100">
+                    <!-- Unit Header -->
+                    <div class="card-header bg-dark border-secondary py-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="text-primary fw-bold mb-0">@unit.UnitCode</h5>
+                                <p class="text-light small mb-0">@unit.UnitName</p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge rounded-pill bg-dark border border-secondary text-primary">@unit.CompletedResources / @unit.TotalResources Items</span>
+                                <div class="text-muted extra-small mt-1">@unit.Percentage% Complete</div>
+                            </div>
+                        </div>
+                        <div class="progress bg-black" style="height:8px;">
+                            <div class="progress-bar bg-success" style="width:@unit.Percentage%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Resources -->
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var resource in unit.Documents
+.Concat(unit.Books)
+.Concat(unit.PastPapers)
+.Concat(unit.Videos)
+.Concat(unit.WebLinks))
+                            {
+                                var isCompleted = Model.CompletedResourceIds.Contains(resource.Id);
+                                var isStarted = Model.StartedResourceIds.Contains(resource.Id);
+
+                                <li class="list-group-item bg-transparent border-secondary py-3 px-4 d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center overflow-hidden">
+                                        <i class="@GetResourceIcon(resource) text-muted me-3"></i>
+
+                                        @if (resource.Type == ResourceType.YouTube)
+                                        {
+                                            <a asp-controller="LearningPath"
+                                               asp-action="WatchVideo"
+                                               asp-route-id="@resource.Id"
+                                               class="text-decoration-none text-light text-truncate">
+                                                @resource.Title
+                                            </a>
+                                        }
+                                        else if (resource.Type == ResourceType.WebLink)
+                                        {
+                                            <a asp-controller="LearningPath"
+                                               asp-action="ViewWebLink"
+                                               asp-route-id="@resource.Id"
+                                               class="text-decoration-none text-light text-truncate">
+                                                @resource.Title
+                                            </a>
+                                        }
+                                        else if (resource.Type == ResourceType.PastPaper)
+                                        {
+                                            <a asp-controller="LearningPath"
+                                               asp-action="AttemptPastPaper"
+                                               asp-route-id="@resource.Id"
+                                               class="text-decoration-none text-light text-truncate">
+                                                @resource.Title
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="LearningPath"
+                                               asp-action="ViewResource"
+                                               asp-route-id="@resource.Id"
+                                               class="text-decoration-none text-light text-truncate">
+                                                @resource.Title
+                                            </a>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        @if (isCompleted)
+                                        {
+                                            <span class="badge bg-success">Completed</span>
+                                        }
+                                        else if (isStarted)
+                                        {
+                                            <span class="badge bg-warning text-dark">In Progress</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Not Started</span>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetResourceIcon(LibraryManagementSystem.Models.CDACC.LibraryResource resource)
+    {
+        switch (resource.Type)
+        {
+            case ResourceType.YouTube:
+                return "bi bi-play-circle";
+            case ResourceType.PastPaper:
+                return "bi bi-file-earmark-text";
+            case ResourceType.WebLink:
+                return "bi bi-link-45deg";
+            case ResourceType.Document:
+            case ResourceType.Book:
+                return "bi bi-book";
+            default:
+                return "bi bi-file";
+        }
+    }
+}
+
+@section Scripts {
+    <script>
+        document.getElementById("semesterFilter").addEventListener("change", function () {
+            let semester = this.value;
+            let url = window.location.pathname;
+            window.location.href = semester ? `${url}?semester=${semester}` : url;
+        });
+    </script>
+}
+
+<style>
+    .bg-black {
+        background-color: #0b0c0d !important;
+    }
+
+    .extra-small {
+        font-size: 0.75rem;
+    }
+
+    .hover-bg-black:hover {
+        background-color: rgba(255,255,255,0.05) !important;
+        transition: 0.3s;
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+</style>

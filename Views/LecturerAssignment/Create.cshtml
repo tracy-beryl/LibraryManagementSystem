@@ -1,0 +1,124 @@
+﻿@model LibraryManagementSystem.ViewModels.CreateLecturerAssignmentViewModel
+@using LibraryManagementSystem.Models
+@using LibraryManagementSystem.ViewModels
+
+@{
+    ViewData["Title"] = "Assign Lecturer";
+    var lecturers = ViewBag.Lecturers as IEnumerable<ApplicationUser>;
+    var units = ViewBag.Units as IEnumerable<LecturerUnitOptionViewModel>;
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Assign Lecturer to Unit</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="LecturerUserId" class="form-label">Lecturer</label>
+                    <select asp-for="LecturerUserId" class="form-select">
+                        <option value="">Select Lecturer</option>
+                        @foreach (var lecturer in lecturers)
+                        {
+                            <option value="@lecturer.Id">@lecturer.FullName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="LecturerUserId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Unit</label>
+                    <select id="unitSelector" class="form-select">
+                        <option value="">Select Unit</option>
+                        @foreach (var unit in units)
+                        {
+                            <option value="@unit.UnitCode"
+                                    data-program="@unit.Program"
+                                    data-level="@unit.Level"
+                                    data-semester="@unit.Semester"
+                                    data-unitcode="@unit.UnitCode"
+                                    data-unitname="@unit.UnitName">
+                                @unit.UnitCode - @unit.UnitName (@unit.Program, @unit.Level, Sem @unit.Semester)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <input asp-for="Program" type="hidden" id="Program" />
+                <input asp-for="Level" type="hidden" id="Level" />
+                <input asp-for="Semester" type="hidden" id="Semester" />
+                <input asp-for="UnitCode" type="hidden" id="UnitCode" />
+                <input asp-for="UnitName" type="hidden" id="UnitName" />
+
+                <div class="mb-3">
+                    <label class="form-label">Program</label>
+                    <input type="text" class="form-control" id="ProgramDisplay" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Level</label>
+                    <input type="text" class="form-control" id="LevelDisplay" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Semester</label>
+                    <input type="text" class="form-control" id="SemesterDisplay" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Unit Code</label>
+                    <input type="text" class="form-control" id="UnitCodeDisplay" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Unit Name</label>
+                    <input type="text" class="form-control" id="UnitNameDisplay" readonly />
+                </div>
+
+                <button type="submit" class="btn btn-dark">Save Assignment</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const selector = document.getElementById("unitSelector");
+
+            const program = document.getElementById("Program");
+            const level = document.getElementById("Level");
+            const semester = document.getElementById("Semester");
+            const unitCode = document.getElementById("UnitCode");
+            const unitName = document.getElementById("UnitName");
+
+            const programDisplay = document.getElementById("ProgramDisplay");
+            const levelDisplay = document.getElementById("LevelDisplay");
+            const semesterDisplay = document.getElementById("SemesterDisplay");
+            const unitCodeDisplay = document.getElementById("UnitCodeDisplay");
+            const unitNameDisplay = document.getElementById("UnitNameDisplay");
+
+            selector.addEventListener("change", function () {
+                const selected = selector.options[selector.selectedIndex];
+
+                program.value = selected.getAttribute("data-program") || "";
+                level.value = selected.getAttribute("data-level") || "";
+                semester.value = selected.getAttribute("data-semester") || "";
+                unitCode.value = selected.getAttribute("data-unitcode") || "";
+                unitName.value = selected.getAttribute("data-unitname") || "";
+
+                programDisplay.value = program.value;
+                levelDisplay.value = level.value;
+                semesterDisplay.value = semester.value;
+                unitCodeDisplay.value = unitCode.value;
+                unitNameDisplay.value = unitName.value;
+            });
+        });
+    </script>
+}

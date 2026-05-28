@@ -1,0 +1,149 @@
+﻿@model LibraryManagementSystem.ViewModels.ViewDocumentViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <h4>@Model.Title</h4>
+
+    <div id="pdf-container" style="height: 600px; overflow-y: auto; border: 1px solid #ccc; background: #f8f9fa; padding: 10px;">
+    </div>
+
+    <div id="status" class="mt-3 text-muted">
+        Loading document...
+    </div>
+</div>
+
+<script type="module">
+    import { getDocument, GlobalWorkerOptions } from '/lib/pdfjs/build/pdf.mjs';
+
+    GlobalWorkerOptions.workerSrc = '/lib/pdfjs/build/pdf.worker.mjs';
+
+    const pdfUrl = '@Model.FilePath';
+    const resourceId = @Model.ResourceId;
+    const container = document.getElementById("pdf-container");
+    const statusEl = document.getElementById("status");
+
+    let pdfDoc = null;
+    let totalPages = 0;
+    let viewedPages = new Set();
+    let activeTime = 0;
+    let lastTick = Date.now();
+
+    console.log("PDF URL:", pdfUrl);
+
+    async function loadPdf() {
+        try {
+            const loadingTask = getDocument({ url: pdfUrl });
+            pdfDoc = await loadingTask.promise;
+            totalPages = pdfDoc.numPages;
+
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                await renderPage(pageNum);
+            }
+
+            trackVisiblePages();
+            await sendProgress();
+
+            statusEl.innerText = "Loaded " + totalPages + " pages.";
+        } catch (error) {
+            console.error("PDF Load Error:", error);
+            statusEl.innerText = "Failed to load document.";
+        }
+    }
+
+    async function renderPage(pageNum) {
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 1.2 });
+
+        const pageWrapper = document.createElement("div");
+        pageWrapper.style.marginBottom = "16px";
+        pageWrapper.dataset.pageNumber = pageNum;
+
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        canvas.style.display = "block";
+        canvas.style.margin = "0 auto";
+        canvas.style.background = "#fff";
+
+        pageWrapper.appendChild(canvas);
+        container.appendChild(pageWrapper);
+
+        await page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+    }
+
+    function trackVisiblePages() {
+        const pageWrappers = container.querySelectorAll("[data-page-number]");
+        const containerRect = container.getBoundingClientRect();
+
+        pageWrappers.forEach(pageWrapper => {
+            const rect = pageWrapper.getBoundingClientRect();
+            const visibleHeight = Math.min(rect.bottom, containerRect.bottom) -
+                                 Math.max(rect.top, containerRect.top);
+            const pageHeight = rect.height;
+
+            if (pageHeight > 0 && (visibleHeight / pageHeight) >= 0.5) {
+                viewedPages.add(parseInt(pageWrapper.dataset.pageNumber));
+            }
+        });
+    }
+
+    function trackActiveTime() {
+        const now = Date.now();
+        if (!document.hidden) {
+            activeTime += (now - lastTick);
+        }
+        lastTick = now;
+    }
+
+    async function sendProgress() {
+        if (totalPages === 0) return;
+
+        const coveragePercent = (viewedPages.size / totalPages) * 100;
+        const timeSpentSeconds = Math.floor(activeTime / 1000);
+
+        try {
+            const response = await fetch('/LearningPath/UpdateDocumentProgress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    resourceId: resourceId,
+                    coveragePercent: coveragePercent,
+                    timeSpentSeconds: timeSpentSeconds
+                })
+            });
+
+            if (!response.ok) {
+                console.error("Progress update failed:", response.status);
+                return;
+            }
+
+            const data = await response.json();
+
+            statusEl.innerText = "Viewed: " + viewedPages.size + "/" + totalPages +
+                                " | Coverage: " + coveragePercent.toFixed(0) + "%" +
+                                " | Active Time: " + timeSpentSeconds + "s" +
+                                (data.completed ? " | Completed" : "");
+        } catch (error) {
+            console.error("Progress update error:", error);
+        }
+    }
+
+    container.addEventListener("scroll", trackVisiblePages);
+
+    setInterval(() => {
+        trackVisiblePages();
+        trackActiveTime();
+        sendProgress();
+    }, 10000);
+
+    loadPdf();
+</script>

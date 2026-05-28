@@ -25,6 +25,12 @@ namespace LibraryManagementSystem.Models
         public DateTime UploadDate { get; set; } = DateTime.Now;
 
         public string FilePath { get; set; }
+
+        [Required]
+        public PastPaperCategory Category { get; set; }
+
+        public string OriginalFileName { get; set; }
+
+        public string FileHash { get; set; }
     }
 }
-

@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model List<LibraryManagementSystem.Models.Loan>
+
+<div class="container-fluid py-4">
+    <h3 class="mb-4">My History</h3>
+
+    
+        <div class="table-responsive">
+            <table id="example" class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Title</th>
+                        <th>Borrowed Date</th>
+                        <th>Returned Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int count = 1;
+                    }
+                    @foreach (var loan in Model)
+                    {
+                        <tr>
+                            <td>@count</td>
+                            <td>@loan.Book.Title</td>
+                            <td>@loan.LoanDate.ToShortDateString()</td>
+                            <td>@(loan.ReturnDate?.ToShortDateString() ?? "Not Returned")</td>
+                        </tr>
+                        count++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    
+</div>
+
+<script>
+    new DataTable('#example');
+</script>

@@ -1,98 +1,4 @@
 ﻿
- /*login page*/
-    .login-page {
-        height: 100vh;
-        width: 100%;
-        background-image: url('~/images/book.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .login-card {
-        background-color: rgba(240, 250, 250, 0.95);
-        padding: 3rem;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 600px;
-    }
-
-    .form-control {
-        height: 45px;
-        border-radius: 5px;
-    }
-
-    .btn-primary {
-        height: 45px;
-        border-radius: 5px;
-        font-weight: 500;
-    }
-
-    /*register page*/
-
-    .card {
-        margin-top: 2rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        padding: 1.5rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .btn-block {
-        padding: 0.75rem;
-    }
-/*index in home*/
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    
-}
-
-li {
-    float: left;
-}
-
-    li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-    }
-
-        
-        li a:hover {
-            background-color: rgba(240, 250, 250, 0.95);
-        }
-
-.stat-label {
-    font-size: 18px;
-    color: #555;
-}
-
-.card-body h3 {
-    margin-top: 10px;
-}
-
-.navbar-nav {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-    .navbar-nav .nav-item {
-        padding: 0 10px;
-    }
 
 
 /* Style the tab */
@@ -115,12 +21,12 @@ li {
 
         /* Change background color of buttons on hover */
         .tab button:hover {
-            background-color: #ddd;
+            background-color: #ffc107;
         }
 
         /* Create an active/current tablink class */
         .tab button.active {
-            background-color: #ccc;
+            background-color: #ffc107;
         }
 
 /* Style the tab content */
@@ -130,3 +36,126 @@ li {
     border: 1px solid #ccc;
     border-top: none;
 }
+.container-md {
+    margin-right: 7px;
+    max-width: 1320px !important;
+}
+
+
+
+   
+
+
+/*index view*/
+@media (max-width: 768px) {
+    .carousel-caption h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/*about view*/
+@media (max-width: 768px) {
+    .about-header h1 {
+        font-size: 2rem;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .sidenav1 {
+        padding: 0.5rem;
+        min-height: auto;
+    }
+}
+
+
+/*index view -*/ /*report*/
+table img {
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 576px) {
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.875rem;
+    }
+}
+
+/*dashboard view*/
+
+.stat-label {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+
+
+.student-dark-dashboard {
+    background-color: #121212;
+    color: #f5f5f5;
+}
+
+    .student-dark-dashboard .card {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+    }
+
+    .student-dark-dashboard .card-header {
+        background-color: #1e1e2f;
+        color: #ffffff;
+        border-color: #3a3a4f !important;
+    }
+
+    .student-dark-dashboard .card-body {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+    }
+
+    .student-dark-dashboard .text-muted {
+        color: #b8bcc2 !important;
+    }
+
+    .student-dark-dashboard .list-group-item {
+        background-color: #1e1e2f;
+        color: #f5f5f5;
+        border-color: #3a3a4f;
+    }
+
+    .student-dark-dashboard .table {
+        color: #f5f5f5;
+    }
+
+        .student-dark-dashboard .table th,
+        .student-dark-dashboard .table td {
+            color: #f5f5f5;
+            border-color: #3a3a4f !important;
+            background-color: transparent;
+        }
+
+        .student-dark-dashboard .table thead th {
+            background-color: #2b2b3d;
+            color: #ffffff;
+        }
+
+    .student-dark-dashboard .border,
+    .student-dark-dashboard .border-bottom,
+    .student-dark-dashboard .border-secondary {
+        border-color: #3a3a4f !important;
+    }
+
+    .student-dark-dashboard .progress {
+        background-color: #343a40;
+    }

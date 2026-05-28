@@ -1,0 +1,63 @@
+﻿@model List<LibraryManagementSystem.ViewModels.PaymentHistoryViewModel>
+
+@{
+    ViewData["Title"] = "My Payments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <h2>My Payment History</h2>
+
+    <div class="table-responsive">
+        <table id="paymentsTable" class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Book</th>
+                    <th>Amount Paid (KES)</th>
+                    <th>Paid On</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int count = 1;
+                }
+
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var payment in Model)
+                    {
+                        <tr>
+                            <td>@count</td>
+                            <td>@payment.BookTitle</td>
+                            <td>@payment.Amount.ToString("N2")</td>
+                            <td>@payment.PaidOn.ToString("dd MMM yyyy HH:mm")</td>
+                            <td>
+                                <a asp-action="Receipt"
+                                   asp-route-loanId="@payment.LoanId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Download Receipt
+                                </a>
+                            </td>
+                        </tr>
+
+                        count++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No payment history found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        new DataTable('#paymentsTable');
+    </script>
+}

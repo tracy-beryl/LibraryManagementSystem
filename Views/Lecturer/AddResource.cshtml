@@ -1,0 +1,144 @@
+﻿@model LibraryManagementSystem.ViewModels.LecturerAddResourceViewModel
+@using LibraryManagementSystem.Models
+@using LibraryManagementSystem.Models.CDACC
+
+@{
+    ViewData["Title"] = "Add Resource";
+    var standards = ViewBag.Standards as List<CompetencyStandard>;
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Add Resource to Assigned Unit</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddResource" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="CompetencyStandardId" class="form-label">Assigned Unit</label>
+                    <select asp-for="CompetencyStandardId" class="form-select">
+                        <option value="">Select Unit</option>
+                        @if (standards != null)
+                        {
+                            foreach (var item in standards)
+                            {
+                                <option value="@item.Id">
+                                    @item.UnitCode - @item.UnitName (@item.Program, @item.Level, Sem @item.Semester)
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CompetencyStandardId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Type" class="form-label"></label>
+                    <select asp-for="Type" class="form-select" id="resourceType">
+                        <option value="">Select Type</option>
+                        <option value="@((int)ResourceType.Document)">Document</option>
+                        <option value="@((int)ResourceType.Book)">Book</option>
+                        <option value="@((int)ResourceType.PastPaper)">Past Paper</option>
+                        <option value="@((int)ResourceType.YouTube)">YouTube</option>
+                        <option value="@((int)ResourceType.WebLink)">Web Link</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-none" id="authorGroup">
+                    <label asp-for="Author" class="form-label"></label>
+                    <input asp-for="Author" class="form-control" />
+                    <span asp-validation-for="Author" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-none" id="isbnGroup">
+                    <label asp-for="ISBN" class="form-label"></label>
+                    <input asp-for="ISBN" class="form-control" />
+                    <span asp-validation-for="ISBN" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-none" id="urlGroup">
+                    <label asp-for="ExternalUrl" class="form-label"></label>
+                    <input asp-for="ExternalUrl" class="form-control" />
+                    <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-none" id="uploadGroup">
+                    <label asp-for="UploadedFile" class="form-label">Upload PDF</label>
+                    <input asp-for="UploadedFile" type="file" class="form-control" accept=".pdf" />
+                    <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 d-none" id="coverGroup">
+                    <label asp-for="CoverImage" class="form-label">Cover Image</label>
+                    <input asp-for="CoverImage" type="file" class="form-control" accept=".jpg,.jpeg,.png" />
+                    <span asp-validation-for="CoverImage" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-dark">Save Resource</button>
+                <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resourceType = document.getElementById("resourceType");
+
+            const authorGroup = document.getElementById("authorGroup");
+            const isbnGroup = document.getElementById("isbnGroup");
+            const urlGroup = document.getElementById("urlGroup");
+            const uploadGroup = document.getElementById("uploadGroup");
+            const coverGroup = document.getElementById("coverGroup");
+
+            function hideAll() {
+                authorGroup.classList.add("d-none");
+                isbnGroup.classList.add("d-none");
+                urlGroup.classList.add("d-none");
+                uploadGroup.classList.add("d-none");
+                coverGroup.classList.add("d-none");
+            }
+
+            function updateFields() {
+                hideAll();
+
+                const selected = resourceType.value;
+
+                const bookValue = "@((int)ResourceType.Book)";
+                const documentValue = "@((int)ResourceType.Document)";
+                const pastPaperValue = "@((int)ResourceType.PastPaper)";
+                const webLinkValue = "@((int)ResourceType.WebLink)";
+                const youtubeValue = "@((int)ResourceType.YouTube)";
+
+                if (selected === bookValue) {
+                    authorGroup.classList.remove("d-none");
+                    isbnGroup.classList.remove("d-none");
+                    uploadGroup.classList.remove("d-none");
+                    coverGroup.classList.remove("d-none");
+                }
+                else if (selected === documentValue || selected === pastPaperValue) {
+                    uploadGroup.classList.remove("d-none");
+                }
+                else if (selected === webLinkValue || selected === youtubeValue) {
+                    urlGroup.classList.remove("d-none");
+                }
+            }
+
+            updateFields();
+            resourceType.addEventListener("change", updateFields);
+        });
+    </script>
+}

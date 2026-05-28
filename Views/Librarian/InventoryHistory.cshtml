@@ -1,0 +1,140 @@
+﻿@model LibraryManagementSystem.ViewModels.InventoryHistoryViewModel
+
+@{
+    ViewData["Title"] = "Inventory History";
+}
+
+<div class="container-fluid py-4 bg-dark min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">Inventory History</h2>
+            <p class="text-muted mb-0">@Model.BookTitle</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Librarian"
+               asp-action="AddStock"
+               asp-route-bookId="@Model.BookId"
+               class="btn btn-outline-primary">
+                Add Stock
+            </a>
+
+            <a asp-controller="Librarian"
+               asp-action="ReportDamage"
+               asp-route-bookId="@Model.BookId"
+               class="btn btn-outline-danger">
+                Report Damage/Missing
+            </a>
+
+            <a asp-controller="Librarian"
+               asp-action="Inventory"
+               class="btn btn-outline-light">
+                Back to Inventory
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Total Copies</p>
+                    <h3 class="text-light fw-bold">@Model.TotalCopies</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Available</p>
+                    <h3 class="text-success fw-bold">@Model.AvailableCopies</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Damaged</p>
+                    <h3 class="text-danger fw-bold">@Model.DamagedCopies</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Missing</p>
+                    <h3 class="text-warning fw-bold">@Model.MissingCopies</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-2">
+            <div class="card bg-dark border-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Threshold</p>
+                    <h3 class="text-info fw-bold">@Model.ReorderThreshold</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary">
+            <h5 class="text-white mb-0">Transaction History</h5>
+        </div>
+
+        <div class="card-body">
+            @if (Model.Transactions.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Qty</th>
+                                <th>Prev Available</th>
+                                <th>New Available</th>
+                                <th>Performed By</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tx in Model.Transactions)
+                            {
+                                <tr>
+                                    <td>@tx.CreatedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@tx.TransactionType</span>
+                                    </td>
+                                    <td>@tx.QuantityChanged</td>
+                                    <td>@tx.PreviousAvailableCopies</td>
+                                    <td>@tx.NewAvailableCopies</td>
+                                    <td>@tx.PerformedByName</td>
+                                    <td>@tx.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">No transaction history found for this book.</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+﻿@model LibraryManagementSystem.ViewModels.ResourceCreateViewModel
+@{
+    ViewData["Title"] = "Create Resource";
+}
+
+<h2>Create Library Resource</h2>
+
+<form asp-action="CreateResource" method="post" enctype="multipart/form-data" class="mt-3">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label"></label>
+        <select asp-for="Type" id="typeSelect" class="form-control" asp-items="Html.GetEnumSelectList<ResourceType>()">
+            <option value="">-- Select Type --</option>
+        </select>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <!-- PDF Upload Section -->
+    <div class="mb-3" id="uploadSection" style="display:none;">
+        <label asp-for="UploadedFile" class="form-label">Upload PDF</label>
+        <input asp-for="UploadedFile" id="UploadedFile" type="file" class="form-control" accept="application/pdf" />
+        <span asp-validation-for="UploadedFile" class="text-danger"></span>
+
+        <div id="pdfPreviewContainer" class="mt-3" style="display:none;">
+            <canvas id="pdfPreviewCanvas" style="max-width:100%; border:1px solid #ccc;"></canvas>
+            <div id="pdfPageCount" class="text-muted mt-2"></div>
+        </div>
+    </div>
+
+    <!-- External URL Section -->
+    <div class="mb-3" id="urlSection" style="display:none;">
+        <label asp-for="ExternalUrl" class="form-label">External URL</label>
+        <input asp-for="ExternalUrl" class="form-control" />
+        <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Book Section -->
+    <div id="bookSection" style="display:none;">
+        <div class="mb-3">
+            <label asp-for="Author" class="form-label"></label>
+            <input asp-for="Author" class="form-control" />
+            <span asp-validation-for="Author" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ISBN" class="form-label"></label>
+            <input asp-for="ISBN" class="form-control" />
+            <span asp-validation-for="ISBN" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CoverImage" class="form-label">Cover Image (Optional)</label>
+            <input asp-for="CoverImage" type="file" class="form-control" accept=".jpg,.jpeg,.png" />
+            <span asp-validation-for="CoverImage" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Save Resource
+    </button>
+</form>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="module">
+        import { getDocument, GlobalWorkerOptions } from '/lib/pdfjs/build/pdf.mjs';
+
+        GlobalWorkerOptions.workerSrc = '/lib/pdfjs/build/pdf.worker.mjs';
+
+        const typeSelect = document.getElementById("typeSelect");
+        const uploadSection = document.getElementById("uploadSection");
+        const urlSection = document.getElementById("urlSection");
+        const bookSection = document.getElementById("bookSection");
+        const uploadedFileInput = document.getElementById("UploadedFile");
+
+        const previewContainer = document.getElementById("pdfPreviewContainer");
+        const previewCanvas = document.getElementById("pdfPreviewCanvas");
+        const pageCountText = document.getElementById("pdfPageCount");
+
+        function toggleFields() {
+            const selected = parseInt(typeSelect.value);
+
+            uploadSection.style.display = "none";
+            urlSection.style.display = "none";
+            bookSection.style.display = "none";
+
+            if (selected === 0) { // Document
+                uploadSection.style.display = "block";
+            } else if (selected === 1 || selected === 2) { // WebLink or YouTube
+                urlSection.style.display = "block";
+            } else if (selected === 3) { // Book
+                uploadSection.style.display = "block";
+                bookSection.style.display = "block";
+            } else if (selected === 4) { // PastPaper
+                uploadSection.style.display = "block";
+            }
+        }
+
+        async function previewPdf(file) {
+            if (!file || file.type !== "application/pdf") {
+                if (previewContainer) {
+                    previewContainer.style.display = "none";
+                }
+                return;
+            }
+
+            try {
+                const fileReader = new FileReader();
+
+                fileReader.onload = async function () {
+                    const typedArray = new Uint8Array(this.result);
+                    const pdf = await getDocument({ data: typedArray }).promise;
+
+                    if (pageCountText) {
+                        pageCountText.textContent = "Page count: " + pdf.numPages;
+                    }
+
+                    const page = await pdf.getPage(1);
+                    const viewport = page.getViewport({ scale: 1.0 });
+
+                    const context = previewCanvas.getContext("2d");
+                    previewCanvas.width = viewport.width;
+                    previewCanvas.height = viewport.height;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    if (previewContainer) {
+                        previewContainer.style.display = "block";
+                    }
+                };
+
+                fileReader.readAsArrayBuffer(file);
+            } catch (error) {
+                console.error("PDF preview failed:", error);
+                if (previewContainer) {
+                    previewContainer.style.display = "none";
+                }
+            }
+        }
+
+        typeSelect.addEventListener("change", toggleFields);
+        window.addEventListener("load", toggleFields);
+
+        if (uploadedFileInput) {
+            uploadedFileInput.addEventListener("change", function () {
+                if (this.files.length > 0) {
+                    previewPdf(this.files[0]);
+                } else if (previewContainer) {
+                    previewContainer.style.display = "none";
+                }
+            });
+        }
+    </script>
+}
